@@ -3,12 +3,26 @@ import time
 
 
 class Quest(threading.Thread):
-    def __init__(self):
+    quit = False
+
+    def __init__(self, name):
         threading.Thread.__init__(self)
-        self.board = 1
+        self.daemon = True
+        self.name = name
 
     def run(self):
-        while True:
-            self.board += 1
-            print(self.board)
+        while not self.quit:
+            pass
             time.sleep(5)
+
+    def reload(self):
+        pass
+
+    def legend(self):
+        pass
+
+    def stop(self):
+        pass
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
