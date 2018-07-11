@@ -4,6 +4,7 @@ import time
 
 class Quest(threading.Thread):
     quit = False
+    start_time = None
 
     def __init__(self, name):
         threading.Thread.__init__(self)
@@ -19,7 +20,7 @@ class Quest(threading.Thread):
         pass
 
     def legend(self):
-        pass
+        self.start_time = time.time()
 
     def stop(self):
         pass
