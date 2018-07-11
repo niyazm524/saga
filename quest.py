@@ -1,4 +1,6 @@
 import threading
+import logging, logging.config
+from log_config import log_config
 import time
 
 
@@ -10,6 +12,9 @@ class Quest(threading.Thread):
         threading.Thread.__init__(self)
         self.daemon = True
         self.name = name
+        logging.config.dictConfig(log_config)
+        self.logger = logging.getLogger("quest")
+        self.logger.info("Quest {} initiated".format(self.name))
 
     def run(self):
         while not self.quit:
@@ -26,4 +31,4 @@ class Quest(threading.Thread):
         pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        pass
+        self.logger.info("__exit__")
