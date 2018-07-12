@@ -1,64 +1,23 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Панель управления</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap -->
-    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/bootstrap-switch.min.css') }}" rel="stylesheet">
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-    <script src="{{ url_for('static', filename='js/html5shiv.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/respond.min.js') }}"></script>
-    <![endif]-->
-</head>
-<body>
-<div class="container">
-    <h1>Скандинавская сага <div class="sounds pull-right">
-        <span>звуки</span>
-        <input type="checkbox" name="soundstoggle" checked>
-    </div>
-    </h1>
-    <hr/>
-    <div class="panel panel-primary">
-        <div class="panel-heading">Время</div>
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-default" id="time-reduce">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </button>
-                </div>
-                <div class="col-sm-10">
-                    <div class="progress">
-                        <div class="progress-bar progress-bar-info" id="time-progress" style="width:30%" role="progressbar" aria-valuemin="0" aria-valuemax="90" aria-valuenow="30"><span>30%</span></div>
-                    </div>
-                </div>
-                <div class="col-sm-1">
-                    <button type="button" class="btn btn-default" id="time-add">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                </div>
+{% block content %}
+{% for group in layout %}
+<div class="panel panel-default">
+    <div class="panel-heading">{{ group.name }}</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-sm-6">
+                {% for leftbutton in group.leftbuttons %}
+                <button type="button" class="btn btn-block" id="button-{{ leftbutton.id }}">{{ leftbutton.text }}</button>
+                {% endfor %}
+            </div>
+            <div class="col-sm-6">
+                {% for rightbutton in group.rightbuttons %}
+                <button type="button" class="btn btn-block" id="button-{{ rightbutton.id }}">{{ rightbutton.text }}</button>
+                {% endfor %}
             </div>
         </div>
     </div>
-    <hr/>
-
 </div>
-
-<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-<!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/bootstrap-switch.min.js') }}"></script>
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-
-</body>
-</html>
+{% endfor %}
+{% endblock content %}

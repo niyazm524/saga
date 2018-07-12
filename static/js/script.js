@@ -14,4 +14,21 @@ $("#time-add").click(function(){
     time += 5;
     updateTimeProgress(time);
 });
-
+$(".btn").click(function(event){
+    $.get(
+      "/btn_click",
+      {
+        id: event.target.id.replace(/^button-/, '')
+      }
+    )
+    .success(function(res) {
+        if(res != "ok" && !$(event.target).hasClass("btn-warning")){
+            $(event.target).addClass("btn-warning");
+        }
+    })
+    .error(function() {
+        if(!$(event.target).hasClass("btn-warning")){
+            $(event.target).addClass("btn-warning");
+        }
+    })
+});

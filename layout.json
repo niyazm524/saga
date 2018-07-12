@@ -1,0 +1,10 @@
+[
+  {"name": "Example name",
+    "leftbuttons": [
+      {"text": "text", "id": "some-id"},
+      {"text": "second", "id": "dont-repeat"}
+    ],
+    "rightbuttons": [
+      {"text": "right", "id": "right"}
+    ]}
+]
