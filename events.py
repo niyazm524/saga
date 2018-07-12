@@ -24,3 +24,12 @@ class Event:
 
     def __eq__(self, other):
         return self.event_type == other.event_type and self.event_data == other.event_data
+
+    def __format__(self, format_spec):
+        return "<Event> {} with data {}".format(self.event_type.name, self.event_data)
+
+    def __repr__(self):
+        return "<Event> {} with data {}".format(self.event_type.name, self.event_data)
+
+    def __str__(self):
+        return "<Event> {} with data {}".format(self.event_type.name, self.event_data)
