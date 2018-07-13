@@ -1,5 +1,6 @@
 $("[name='soundstoggle']").bootstrapSwitch();
 function updateTimeProgress(time)   {
+    if(time )
     time_progress.css('width', time+'%').attr('aria-valuenow', time);
 }
 var time_progress = $("#time-progress");
@@ -15,6 +16,7 @@ $("#time-add").click(function(){
     updateTimeProgress(time);
 });
 $(".btn").click(function(event){
+    this.blur();
     $.get(
       "/btn_click",
       {

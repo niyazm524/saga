@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 from flask import Flask, render_template, request
 from quest import Quest
-from log_config import log_config
-import logging, logging.config
+from configs.log_config import log_config
+import logging.config
 from observer import Observer
 from events import Event, EventType
+import time
 import json
 
 
@@ -27,7 +28,7 @@ except ValueError:
 
 @app.route('/')
 def index():
-    return render_template("index.html", name=quest.name, layout=layout)
+    return render_template("index.html", name=quest.name, layout=layout, timer=quest.get_time())
 
 
 @app.route('/setup')
@@ -42,6 +43,12 @@ def btn_click():
         return "fail"
     observer.push_event(Event(EventType.WEB_BUTTON_CLICKED, btn_id))
     return "ok"
+
+
+@app.template_filter('strftime')
+def _jinja2_filter_time(time_):
+    time_format = '%H:%M:%S'
+    return time.strftime(time_format, time.gmtime(time_))
 
 
 if __name__ == "__main__":

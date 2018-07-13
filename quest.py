@@ -1,6 +1,6 @@
 import threading
 import logging, logging.config
-from log_config import log_config
+from configs.log_config import log_config
 from observer import Observer
 from events import Event, EventType
 import time
@@ -9,6 +9,7 @@ import time
 class Quest(threading.Thread):
     quit = False
     start_time = None
+    in_process = False
 
     def __init__(self, name, observer: Observer):
         threading.Thread.__init__(self)
@@ -29,10 +30,18 @@ class Quest(threading.Thread):
 
     def legend(self):
         self.start_time = time.time()
+        self.in_process = True
         self.observer.push_event(Event(EventType.QUEST_START))
 
     def stop(self):
+        self.in_process = False
         self.observer.push_event(Event(EventType.QUEST_STOP))
+
+    def get_time(self):
+        if self.in_process:
+            return time.time() - self.start_time
+        else:
+            return 0
 
     def __del__(self):
         self.logger.info("__del__")

@@ -1,9 +1,10 @@
 .progress {
-    position: relative;
+    text-align:center;
     height: 34px;
 }
-.progress-bar {
-    position: absolute;
-    display: block;
-    color: black;
+.progress-value {
+    position:absolute;
+    right:0;
+    left:0;
+    font-size: 26px;
 }
