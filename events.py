@@ -11,9 +11,11 @@ class EventType(Enum):
     SOUND_PLAY_START = 6
     DOOR_OPENED = 7
     DOOR_LOCKED = 8
+    PROGRAM_STARTED = 9
 
 
-class Event:
+class Event():
+    event_id = None
     event_type = None
     event_time = time.time()
     event_data = None
@@ -21,6 +23,9 @@ class Event:
     def __init__(self, event_type, event_data=None):
         self.event_type = event_type
         self.event_data = event_data
+
+    def __dict__(self):
+        return {"event_id": self.event_id, "event_type": self.event_type.value, "event_data": self.event_data}
 
     def __eq__(self, other):
         return self.event_type == other.event_type and self.event_data == other.event_data

@@ -21,6 +21,7 @@ class Quest(threading.Thread):
         self.logger.info("Quest {} initiated".format(self.name))
 
     def run(self):
+        self.observer.push_event(EventType.PROGRAM_STARTED)
         while not self.quit:
             pass
             time.sleep(5)

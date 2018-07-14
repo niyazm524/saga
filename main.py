@@ -7,6 +7,7 @@ from observer import Observer
 from events import Event, EventType
 import time
 import json
+import pickle
 
 
 app = Flask(__name__)
@@ -43,6 +44,21 @@ def btn_click():
         return "fail"
     observer.push_event(Event(EventType.WEB_BUTTON_CLICKED, btn_id))
     return "ok"
+
+
+@app.route('/poll', methods=['GET', 'POST'])
+def poll():
+    client_last_id = request.args.get('last_id', default=0, type=int)
+    if client_last_id == 0:
+        return json.dumps({"last_id": observer.last_id})
+
+    while True:
+        news = observer.poll_news(client_last_id)
+        print(news)
+        if news is not None:
+            return json.dumps({'last_id': observer.last_id, 'events': news})
+        else:
+            time.sleep(1)
 
 
 @app.template_filter('strftime')
