@@ -10,6 +10,7 @@ class Quest(threading.Thread):
     quit = False
     start_time = None
     in_process = False
+    aro = 0
 
     def __init__(self, name, observer: Observer):
         threading.Thread.__init__(self)
@@ -21,7 +22,7 @@ class Quest(threading.Thread):
         self.logger.info("Quest {} initiated".format(self.name))
 
     def run(self):
-        self.observer.push_event(EventType.PROGRAM_STARTED)
+        self.observer.push_event(Event(EventType.PROGRAM_STARTED))
         while not self.quit:
             pass
             time.sleep(5)
@@ -33,6 +34,7 @@ class Quest(threading.Thread):
         self.start_time = time.time()
         self.in_process = True
         self.observer.push_event(Event(EventType.QUEST_START))
+
 
     def stop(self):
         self.in_process = False

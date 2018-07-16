@@ -1,5 +1,6 @@
 import time
 from enum import Enum
+from devices import DeviceType
 
 
 class EventType(Enum):
@@ -18,11 +19,13 @@ class Event():
     event_id = None
     event_type = None
     event_time = time.time()
+    event_device = None
     event_data = None
 
-    def __init__(self, event_type, event_data=None):
+    def __init__(self, event_type, event_data=None, event_device=None):
         self.event_type = event_type
         self.event_data = event_data
+        self.event_device = event_device
 
     def __dict__(self):
         return {"event_id": self.event_id, "event_type": self.event_type.value, "event_data": self.event_data}

@@ -1,4 +1,5 @@
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
+import os
 
 
 class Player:
@@ -9,10 +10,10 @@ class Player:
         self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         self._volume = volume
         self.volume = volume
-        self.proc.stdin.write('LOAD test.mp3\n')
 
     def rc(self, command: str):
-        self.proc.stdin.write(str.encode(command+'\n'))
+        self.proc.stdin.write((command+'\n').encode('UTF-8'))
+        self.proc.stdin.flush()
 
     def load(self, sound_file):
         self.rc("LOAD " + sound_file)
@@ -30,6 +31,10 @@ class Player:
     def quit(self):
         self.rc("QUIT")
 
+    @staticmethod
+    def say_text(text: str):
+        os.spawnl(os.P_NOWAIT, 'echo "{}" | festival -tts'.format(text))
+
     @property
     def volume(self):
         return self._volume
@@ -38,5 +43,3 @@ class Player:
     def volume(self, new_volume):
         self.rc("GAIN "+str(new_volume))
         self._volume = new_volume
-
-p = Player()

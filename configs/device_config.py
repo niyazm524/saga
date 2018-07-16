@@ -14,3 +14,4 @@ altar5 = Altar("10.0.110.103", 5)
 board = Board("/dev/ttyS0")
 
 door1 = Door("10.0.110.114", 7, 1)
+door4 = Door("10.0.110.115", 7, 4)

@@ -7,7 +7,8 @@ from observer import Observer
 from events import Event, EventType
 import time
 import json
-from devices import Device
+from player import Player
+from devices import Device, DeviceType
 import configs.device_config as device_cfg
 
 
@@ -15,7 +16,7 @@ app = Flask(__name__)
 logging.config.dictConfig(log_config)
 logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
-
+player = Player()
 observer = Observer(logger)
 quest = Quest("Скандинавская сага", observer)
 try:
@@ -61,6 +62,13 @@ def poll():
             return json.dumps({'last_id': observer.last_id, 'events': news})
         else:
             time.sleep(1)
+
+
+@app.route('/altars', methods=['GET'])
+def altars():
+    data = request.args.get('data', default="", type=str)
+    observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, data, DeviceType.ALTAR))
+    return ""
 
 
 @app.template_filter('strftime')
