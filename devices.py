@@ -106,7 +106,7 @@ class Door(Device):
     @is_open.setter
     def is_open(self, is_open: bool):
         try:
-            urlopen("http://{}/?q={}{}".format(self.IP, "ON" if is_open else "OFF", self.gpio))
+            urlopen("http://{}/?q={}{}".format(self.IP, "OFF" if is_open else "ON", self.gpio))
         except:
             pass
 
