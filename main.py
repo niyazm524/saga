@@ -7,12 +7,15 @@ from observer import Observer
 from events import Event, EventType
 import time
 import json
-import pickle
+from devices import Device
+import configs.device_config as device_cfg
 
 
 app = Flask(__name__)
 logging.config.dictConfig(log_config)
 logger = logging.getLogger("saga")
+devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
+
 observer = Observer(logger)
 quest = Quest("Скандинавская сага", observer)
 try:
@@ -34,7 +37,7 @@ def index():
 
 @app.route('/setup')
 def setup():
-    return render_template("setup.html", layout=layout)
+    return render_template("setup.html", layout=layout, devices=devices, timer=0)
 
 
 @app.route('/btn_click', methods=['GET', 'POST'])
@@ -54,7 +57,6 @@ def poll():
 
     while True:
         news = observer.poll_news(client_last_id)
-        print(news)
         if news is not None:
             return json.dumps({'last_id': observer.last_id, 'events': news})
         else:

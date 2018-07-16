@@ -1,0 +1,6 @@
+layout = [
+    {"type": "panel", "items":
+     [
+
+     ]}
+]
