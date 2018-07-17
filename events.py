@@ -13,6 +13,8 @@ class EventType(Enum):
     DOOR_OPENED = 7
     DOOR_LOCKED = 8
     PROGRAM_STARTED = 9
+    FTIME_SYNC = 10
+    SOUND_UN_MUTE = 11
 
 
 class Event():

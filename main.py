@@ -18,7 +18,7 @@ logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 player = Player()
 quest = Quest("Скандинавская сага", player)
-observer = Observer(quest, logger)
+observer = Observer(quest, logger, device_cfg)
 
 try:
     layout_file = open("layout.json", 'r')
@@ -34,20 +34,22 @@ except ValueError:
 
 @app.route('/')
 def index():
-    return render_template("index.html", name=quest.name, layout=layout, timer=quest.get_time())
+    return render_template("index.html", name=quest.name, layout=layout, devices=devices, timer=quest.get_time(),
+                           ftime=quest.fulltime_minutes*60)
 
 
 @app.route('/setup')
 def setup():
-    return render_template("setup.html", layout=layout, devices=devices, timer=0)
+    return render_template("setup.html", layout=layout, devices=devices, timer=0, ftime=0)
 
 
 @app.route('/btn_click', methods=['GET', 'POST'])
 def btn_click():
     btn_id = request.args.get('id', default="", type=str)
+    btn_data = request.args.get('data', default="", type=str)
     if btn_id == "":
         return "fail"
-    observer.push_event(Event(EventType.WEB_BUTTON_CLICKED, btn_id))
+    observer.button_clicked(btn_id, btn_data)
     return "ok"
 
 

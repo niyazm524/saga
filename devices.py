@@ -11,18 +11,20 @@ class DeviceType(Enum):
 
 class Device:
     device_type = None
+    btn_id = None
     name = ""
     actions = []
     IP = None
 
-    def __init__(self, device_type, ip):
+    def __init__(self, device_type, ip, btn_id=None):
         self.device_type = device_type
-        self.IP = ip
+        self.IP = "10.0.110."+str(ip)
+        self.btn_id = btn_id
 
 
 class Altar(Device):
-    def __init__(self, ip, index):
-        super().__init__(DeviceType.ALTAR, ip)
+    def __init__(self, ip, index, btn_id=None):
+        super().__init__(DeviceType.ALTAR, ip, btn_id)
         if index < 1 or index > 5:
             raise Exception("Индекс алтаря - число от 1 до 5")
         self.index = index
@@ -91,14 +93,21 @@ class Board(Device):
 
 class Door(Device):
     name = "Дверь"
+    from_uart = False
     _is_open = False
 
-    def __init__(self, ip, gpio, index):
-        super().__init__(DeviceType.DOOR, ip)
+    def __init__(self, ip, gpio, index, from_uart=False, btn_id=None):
+        super().__init__(DeviceType.DOOR, ip, btn_id)
         self.gpio = gpio
         self.index = index
         self.name = "Дверь {}".format(index)
+        self.from_uart = from_uart
 
+    def _format_uart(self, is_open: bool):
+        return "uart=20{}0{}".format(self.gpio, int(is_open))
+
+    def _format_esp(self, is_open: bool):
+        return "q={}{}".format("OFF" if is_open else "ON", self.gpio)
     @property
     def is_open(self):
         return self._is_open
@@ -106,7 +115,8 @@ class Door(Device):
     @is_open.setter
     def is_open(self, is_open: bool):
         try:
-            urlopen("http://{}/?q={}{}".format(self.IP, "OFF" if is_open else "ON", self.gpio))
+            urlopen("http://{}/?{}".format(self.IP,
+                                           self._format_uart(is_open) if self.from_uart else self._format_esp(is_open)))
         except:
             pass
 

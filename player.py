@@ -10,13 +10,14 @@ class Player:
         self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
         self._volume = volume
         self.volume = volume
+        self.prev_volume = volume
 
     def rc(self, command: str):
         self.proc.stdin.write((command+'\n').encode('UTF-8'))
         self.proc.stdin.flush()
 
     def load(self, sound_file):
-        self.rc("LOAD " + sound_file)
+        self.rc("LOAD " + "sounds/"+sound_file)
         self.current_sound_file = sound_file
         self.paused = False
 
@@ -33,7 +34,9 @@ class Player:
 
     @staticmethod
     def say_text(text: str):
-        os.spawnl(os.P_NOWAIT, 'echo "{}" | festival -tts'.format(text))
+        os.system('echo "{}" | festival --tts'.format(text))
+        # Popen('/bin/echo "{}" | festival -tts'.format(text), close_fds=True)
+        # os.spawnl(os.P_NOWAIT, 'echo "{}" | festival -tts'.format(text), "")
 
     @property
     def volume(self):
@@ -42,4 +45,7 @@ class Player:
     @volume.setter
     def volume(self, new_volume):
         self.rc("GAIN "+str(new_volume))
+        self.prev_volume = self._volume
         self._volume = new_volume
+
+

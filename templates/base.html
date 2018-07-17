@@ -23,7 +23,7 @@
 <div class="container">
     <h1>{% block hname %}Скандинавская сага{% endblock %}<div class="sounds pull-right">
         <span>звуки</span>
-        <input type="checkbox" name="soundstoggle" checked>
+        <input type="checkbox" id="soundstoggle" onchange="soundtoggled()" checked>
     </div>
     </h1>
     <hr/>
@@ -39,19 +39,21 @@
             </div>
             <div class="row">
                 <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default">
-                        <span class="glyphicon glyphicon-minus" id="btn-time-reduce"></span>
+                    <button type="button" class="btn btn-default" id="btn-time-reduce">
+                        <span class="glyphicon glyphicon-minus"></span>
                     </button>
                 </div>
                 <div class="col-md-10 col-xs-8">
                     <div class="progress">
-                        <span class="progress-value">{{ timer|strftime }}</span>
+                        <div class="progress-value">
+                        <span id="time-progress">{{ timer|strftime }}</span> / <span id="ftime">{{ ftime|strftime }}</span>
+                        </div>
                         <div class="progress-bar progress-bar-info" id="btn-time-progress" style="width:0" role="progressbar" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0"></div>
                     </div>
                 </div>
                 <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default pull-right">
-                        <span class="glyphicon glyphicon-plus" id="btn-time-add"></span>
+                    <button type="button" class="btn btn-default pull-right" id="btn-time-add">
+                        <span class="glyphicon glyphicon-plus"></span>
                     </button>
                 </div>
             </div>

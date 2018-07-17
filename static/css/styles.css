@@ -3,6 +3,7 @@
     height: 34px;
 }
 .progress-value {
+    display: inline;
     position:absolute;
     right:0;
     left:0;
