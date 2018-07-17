@@ -1,7 +1,7 @@
 from events import Event, EventType
-from handler import Handler
 from pprint import pformat
 from collections import deque
+from concurrent.futures import ThreadPoolExecutor
 
 
 class Observer:
@@ -9,23 +9,17 @@ class Observer:
     last_id = 0
     last_10 = deque(maxlen=10)
 
-    def __init__(self, logger):
+    def __init__(self, quest, logger):
+        self.quest = quest
         self.logger = logger
-
-    def subscribe(self, handler: Handler):
-        if handler not in self.handlers:
-            self.handlers.append(handler)
-            self.logger.debug("New subscription for event {}".format(handler.clause_event))
+        self.pool = ThreadPoolExecutor(5)
 
     def push_event(self, event: Event):
         self.last_id += 1
         event.event_id = self.last_id
         self.last_10.appendleft(event)
         self.logger.debug("New event! "+pformat(event))
-        for handler in self.handlers:
-            if handler.check_event(event):
-                handler.fired_event = event
-                handler()
+        self.pool.submit(self.quest.update, event)
 
     def poll_news(self, last_new):
         if last_new == self.last_id:

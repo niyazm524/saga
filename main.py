@@ -17,8 +17,9 @@ logging.config.dictConfig(log_config)
 logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 player = Player()
-observer = Observer(logger)
-quest = Quest("Скандинавская сага", observer)
+quest = Quest("Скандинавская сага", player)
+observer = Observer(quest, logger)
+
 try:
     layout_file = open("layout.json", 'r')
     layout_content = layout_file.read()
@@ -79,5 +80,5 @@ def _jinja2_filter_time(time_):
 
 if __name__ == "__main__":
     logger.info("Program started")
-    quest.start()
+    observer.push_event(Event(EventType.PROGRAM_STARTED))
     app.run(port=8000, host='0.0.0.0', debug=True, use_reloader=False, threaded=True)
