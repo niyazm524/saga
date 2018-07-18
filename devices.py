@@ -7,13 +7,15 @@ class DeviceType(Enum):
     DOOR = 1
     ALTAR = 2
     BOARD = 3
+    TRUNKS = 4
 
 
 class Device:
     device_type = None
+    control = None
+    actions = []
     btn_id = None
     name = ""
-    actions = []
     IP = None
 
     def __init__(self, device_type, ip, btn_id=None):
@@ -22,13 +24,12 @@ class Device:
         self.btn_id = btn_id
 
 
-class Altar(Device):
-    def __init__(self, ip, index, btn_id=None):
+class Altars(Device):
+    _actived = 0
+
+    def __init__(self, ip, btn_id=None):
         super().__init__(DeviceType.ALTAR, ip, btn_id)
-        if index < 1 or index > 5:
-            raise Exception("Индекс алтаря - число от 1 до 5")
-        self.index = index
-        self.name = "Алтарь {}".format(index)
+        self.name = "Алтари"
 
     def send_to_relay(self, command):
         try:
@@ -37,14 +38,20 @@ class Altar(Device):
             return False
         else:
             return True
-    
-    def turn_off(self):
-        t = ["2"]*5
-        t[self.index-1] = "0"
-        return self.send_to_relay("".join(t))
 
-    def turn_on(self):
-        return self.send_to_relay("{:05d}".format(10 ** (self.index-1)))
+    @property
+    def actived(self):
+        return self._actived
+
+    @actived.setter
+    def actived(self, activate):
+        if 0 <= activate <= 5:
+            self._actived = activate
+            if activate == 0:
+                command = "30000"
+            else:
+                command = "20{}01".format(activate)
+            self.send_to_relay(command)
 
     def turn_off_all(self):
         return self.send_to_relay("00000")
@@ -104,7 +111,7 @@ class Door(Device):
         self.from_uart = from_uart
 
     def _format_uart(self, is_open: bool):
-        return "uart=20{}0{}".format(self.gpio, int(is_open))
+        return "uart=20{}0{}".format(self.gpio, int(not is_open))
 
     def _format_esp(self, is_open: bool):
         return "q={}{}".format("OFF" if is_open else "ON", self.gpio)

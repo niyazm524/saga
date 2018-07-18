@@ -18,23 +18,21 @@
         </div>
     </div>
 </div>
-{% for group in layout %}
+
 <div class="panel panel-default">
-    <div class="panel-heading">{{ group.name }}</div>
+    <div class="panel-heading">Алтари</div>
     <div class="panel-body">
         <div class="row">
-            <div class="col-sm-6">
-                {% for leftbutton in group.leftbuttons %}
-                <button type="button" class="btn btn-block" id="button-{{ leftbutton.id }}">{{ leftbutton.text }}</button>
-                {% endfor %}
-            </div>
-            <div class="col-sm-6">
-                {% for rightbutton in group.rightbuttons %}
-                <button type="button" class="btn btn-block" id="button-{{ rightbutton.id }}">{{ rightbutton.text }}</button>
-                {% endfor %}
+            <div class="col-sm-12 text-center">
+            {% for n in range(1,6) %}
+                <label type="button" class="btn btn-primary btn-altar{% if devices.altars.actived == n %} active{% endif %}" autocomplete="off">
+                    Алтарь {{n}}
+                </label>
+            {% endfor %}
             </div>
         </div>
     </div>
 </div>
-{% endfor %}
+
+
 {% endblock content %}

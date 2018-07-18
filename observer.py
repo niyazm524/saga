@@ -9,7 +9,7 @@ class Observer:
     handlers = []
     last_id = 0
     last_10 = deque(maxlen=10)
-    ignored_list = [EventType.SOUND_PLAY_START]
+    ignored_list = [EventType.SOUND_PLAY_START, EventType.ALTARS_WEB_REFRESH]
 
     def __init__(self, quest, logger, device_cfg, player):
         self.quest = quest
@@ -46,7 +46,12 @@ class Observer:
             self.push_event(Event(EventType.QUEST_STOP))
         elif btn_id == "volume":
             self.push_event(Event(EventType.SOUND_VOL_CHANGED, event_data=btn_data))
-
+        elif btn_id == "altars":
+            if btn_data[1] == '0':
+                self.device_cfg.altars.actived = 0
+            else:
+                self.device_cfg.altars.actived = int(btn_data[0])
+            self.push_event(Event(EventType.ALTARS_WEB_REFRESH, event_data=self.device_cfg.altars.actived))
 
     def poll_news(self, last_new):
         if last_new == self.last_id:

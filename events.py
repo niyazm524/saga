@@ -15,6 +15,7 @@ class EventType(Enum):
     PROGRAM_STARTED = 9
     FTIME_SYNC = 10
     SOUND_VOL_CHANGED = 11
+    ALTARS_WEB_REFRESH = 12
 
 
 class Event():

@@ -5,6 +5,13 @@ from events import Event, EventType
 from player import Player
 import configs.device_config as devices
 import time
+from enum import Enum
+
+
+class Progress(Enum):
+    JUST_STARTED = 0
+    PASSED_ALTAR1 = 1
+    PASSED_TRUNKS = 2
 
 
 class Quest:
@@ -13,6 +20,9 @@ class Quest:
     observer = None
     _fulltime_minutes = 90
     in_process = False
+    progress = Progress.JUST_STARTED
+    trunk_index = 0
+    trunks_right = [2, 3, 4, 5, 6, 7]
     aro = 0
     current_altar = 0
 
@@ -35,6 +45,25 @@ class Quest:
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
 
+        if devices.door2.is_open and \
+                self.progress < Progress.PASSED_TRUNKS and \
+                event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                event.event_device == devices.trunks and \
+                event.event_data['detected'] == True:
+            pin = event.event_data['pin']
+
+            if pin == self.trunks_right[self.trunk_index]:
+                self.aro += 1
+                self.trunk_index += 1
+                if self.trunk_index == len(self.trunks_right)-1:
+                    # Команда справилась с сундуками
+                    devices.door3.is_open = True
+                    self.progress = Progress.PASSED_TRUNKS
+                    self.player.load("door.mp3")
+            else:
+                self.aro -= 1
+
+
     def reload(self):
         for door in devices.doors:
             door.is_open = False
@@ -45,12 +74,12 @@ class Quest:
 
         self.player.say_text("some start file")
         time.sleep(3)
-        devices.altar1.blink_all()
+        devices.altars.blink_all()
         time.sleep(3)
         devices.board.start()
-        time.sleep(3)
+        time.sleep(6)
         self.player.load("secret1.mp3")
-        devices.altar1.turn_on()
+        devices.altars.actived = 1
         self.current_altar = 1
         time.sleep(19)
         self.player.load("door.mp3")

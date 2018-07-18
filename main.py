@@ -34,7 +34,7 @@ except ValueError:
 
 @app.route('/')
 def index():
-    return render_template("index.html", name=quest.name, layout=layout, devices=devices, timer=quest.get_time(),
+    return render_template("index.html", quest=quest, layout=layout, devices=device_cfg, timer=quest.get_time(),
                            ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
 
 
@@ -65,6 +65,17 @@ def poll():
             return json.dumps({'last_id': observer.last_id, 'events': news})
         else:
             time.sleep(1)
+
+
+@app.route('/sensors.php', methods=['GET'])
+def sensors():
+    remote_ip = request.remote_addr
+    _detected = request.args.get('detected', default="", type=str)
+    detected = _detected == "true"
+    pin = request.args.get('pin', default=0, type=int)
+    if remote_ip == device_cfg.trunks.IP:
+        observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, event_data={"detected": detected, "pin": pin},
+                                  event_device=device_cfg.trunks))
 
 
 @app.route('/altars', methods=['GET'])
