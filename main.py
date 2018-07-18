@@ -10,6 +10,7 @@ import json
 from player import Player
 from devices import Device, DeviceType
 import configs.device_config as device_cfg
+from configs.layout import gen_layout
 
 
 app = Flask(__name__)
@@ -19,17 +20,7 @@ devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstan
 player = Player()
 quest = Quest("Скандинавская сага", player)
 observer = Observer(quest, logger, device_cfg, player)
-
-try:
-    layout_file = open("layout.json", 'r')
-    layout_content = layout_file.read()
-    if layout_content == "":
-        layout_content = "[]"
-    layout = json.loads(layout_content)
-except ValueError:
-    logger.error("Can't deserialize layout!")
-    logger.error("Quitting..")
-    raise SystemExit()
+layout = gen_layout(device_cfg)
 
 
 @app.route('/')
@@ -53,6 +44,25 @@ def btn_click():
     return "ok"
 
 
+@app.route('/btn-door', methods=['GET', 'POST'])
+def btn_door():
+    door = request.args.get('id', default="", type=str)
+    action = request.args.get('data', default="", type=str)
+    if door == "":
+        return "fail"
+    observer.door_clicked(door, action)
+    return "ok"
+
+
+@app.route('/btn-hint', methods=['GET', 'POST'])
+def btn_hint():
+    hint_id = request.args.get('id', default="", type=str)
+    if hint_id == "":
+        return "fail"
+    observer.hint_clicked(hint_id)
+    return "ok"
+
+
 @app.route('/poll', methods=['GET', 'POST'])
 def poll():
     client_last_id = request.args.get('last_id', default=0, type=int)
@@ -73,9 +83,13 @@ def sensors():
     _detected = request.args.get('detected', default="", type=str)
     detected = _detected == "true"
     pin = request.args.get('pin', default=0, type=int)
-    if remote_ip == device_cfg.trunks.IP:
-        observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, event_data={"detected": detected, "pin": pin},
-                                  event_device=device_cfg.trunks))
+    for sensor in device_cfg.sensors:
+        if remote_ip == sensor.IP:
+            observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, event_data={"detected": detected, "pin": pin},
+                                event_device=sensor))
+            break
+
+    return "ok"
 
 
 @app.route('/altars', methods=['GET'])

@@ -8,6 +8,9 @@ class DeviceType(Enum):
     ALTAR = 2
     BOARD = 3
     TRUNKS = 4
+    BARREL = 5
+    TREE = 6
+    EQUALIZER = 7
 
 
 class Device:
@@ -27,8 +30,8 @@ class Device:
 class Altars(Device):
     _actived = 0
 
-    def __init__(self, ip, btn_id=None):
-        super().__init__(DeviceType.ALTAR, ip, btn_id)
+    def __init__(self, ip):
+        super().__init__(DeviceType.ALTAR, ip)
         self.name = "Алтари"
 
     def send_to_relay(self, command):
@@ -103,11 +106,12 @@ class Door(Device):
     from_uart = False
     _is_open = False
 
-    def __init__(self, ip, gpio, index, from_uart=False, btn_id=None):
-        super().__init__(DeviceType.DOOR, ip, btn_id)
+    def __init__(self, ip, gpio, index, from_uart=False):
+        super().__init__(DeviceType.DOOR, ip)
         self.gpio = gpio
         self.index = index
         self.name = "Дверь {}".format(index)
+        self.btn_id = "door{}".format(index)
         self.from_uart = from_uart
 
     def _format_uart(self, is_open: bool):

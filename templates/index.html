@@ -34,5 +34,26 @@
     </div>
 </div>
 
+{% for room in layout %}
+<div class="panel panel-default autoadded">
+    <div class="panel-heading">{{ room.name }}</div>
+    <div class="panel-body">
+        <div class="row">
+            {% for door in room.buttons %}
+            <div class="col-sm-6">
+                <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-open">{{ door.name }} открыть</label>
+                <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-close">{{ door.name }} закрыть</label>
+            </div>
+            {% endfor %}
+            {% for hint in room.hints %}
+
+            <div class="col-sm-6">
+                <label type="button" class="btn btn-block btn-info hint" id="hint-{{ hint.id }}">{{ hint.desc }}</label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 {% endblock content %}

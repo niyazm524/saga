@@ -53,6 +53,22 @@ class Observer:
                 self.device_cfg.altars.actived = int(btn_data[0])
             self.push_event(Event(EventType.ALTARS_WEB_REFRESH, event_data=self.device_cfg.altars.actived))
 
+    def door_clicked(self, door, action):
+        try:
+            d = getattr(self.device_cfg, door)
+            if action == "open":
+                d.is_open = True
+            elif action == "close":
+                d.is_open = False
+        except Exception as e:
+            self.logger.error(e)
+
+    def hint_clicked(self, hint_id):
+        try:
+            self.player.load("hints/"+hint_id+".mp3")
+        except Exception as e:
+            self.logger.error(e)
+
     def poll_news(self, last_new):
         if last_new == self.last_id:
             return None

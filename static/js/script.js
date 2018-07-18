@@ -76,6 +76,14 @@ altars.click(function(){
     sendAjax("/btn_click", "altars", ($(this).index()+1).toString()+"1");
 });
 
+$(".door").click(function() {
+    var regex = this.id.match(/([^-]+)-(.+)/);
+    sendAjax("/btn-door", regex[1], regex[2]);
+});
+$(".hint").click(function() {
+    sendAjax("/btn-hint", this.id.slice(5), null);
+});
+
 function sendAjax(url, id, data)    {
     $.get(
       url,

@@ -17,3 +17,6 @@
     background-color: #eee;
     color: #337ab7;
 }
+.autoadded label {
+    margin-bottom:5px;
+}

@@ -18,5 +18,10 @@ door6 = Door(116, 7, 6)
 door7 = Door(117, 7, 7)
 
 trunks = Device(DeviceType.TRUNKS, 105)
+barrel = Device(DeviceType.BARREL, 112)
+equalizer = Device(DeviceType.EQUALIZER, 108)
+tree = Device(DeviceType.TREE, 109)
+
 doors = [door1, door2, door3, door4, door5, door6, door7]
 
+sensors = [trunks, tree, equalizer, barrel]

@@ -12,6 +12,10 @@ class Progress(Enum):
     JUST_STARTED = 0
     PASSED_ALTAR1 = 1
     PASSED_TRUNKS = 2
+    PASSED_RFID = 3
+    PASSED_EQUALIZER = 4
+    PASSED_TREE = 5
+    PASSED_BARREL = 6
 
 
 class Quest:
@@ -63,6 +67,37 @@ class Quest:
             else:
                 self.aro -= 1
 
+        if devices.door3.is_open and \
+                self.progress < Progress.PASSED_RFID and \
+                event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                event.event_device == devices.rfid and \
+                event.event_data['detected'] == True:
+            self.progress = Progress.PASSED_RFID
+            devices.door4.is_open = True
+
+        if devices.door4.is_open and \
+                self.progress < Progress.PASSED_EQUALIZER and \
+                event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                event.event_device == devices.equalizer and \
+                event.event_data['detected'] == True:
+            self.progress = Progress.PASSED_EQUALIZER
+            devices.door5.is_open = True
+
+        if devices.door5.is_open and \
+                self.progress < Progress.PASSED_TREE and \
+                event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                event.event_device == devices.tree and \
+                event.event_data['detected'] == True:
+            self.progress = Progress.PASSED_TREE
+            devices.door6.is_open = True
+
+        if devices.door6.is_open and \
+                self.progress < Progress.PASSED_BARREL and \
+                event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                event.event_device == devices.barrel and \
+                event.event_data['detected'] == True:
+            self.progress = Progress.PASSED_BARREL
+            devices.door7.is_open = True
 
     def reload(self):
         for door in devices.doors:
