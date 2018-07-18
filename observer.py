@@ -9,10 +9,14 @@ class Observer:
     handlers = []
     last_id = 0
     last_10 = deque(maxlen=10)
+    ignored_list = [EventType.SOUND_PLAY_START]
 
-    def __init__(self, quest, logger, device_cfg):
+    def __init__(self, quest, logger, device_cfg, player):
         self.quest = quest
+        self.quest.observer = self
         self.logger = logger
+        self.player = player
+        self.player.observer = self
         self.device_cfg = device_cfg
         self.devices = [getattr(device_cfg, device) for device in dir(device_cfg)
                         if isinstance(getattr(device_cfg, device), Device)]
@@ -24,7 +28,8 @@ class Observer:
         event.event_id = self.last_id
         self.last_10.appendleft(event)
         self.logger.debug("New event! "+pformat(event))
-        self.pool.submit(self.quest.update, event)
+        if event.event_type not in self.ignored_list:
+            self.pool.submit(self.quest.update, event)
 
     def button_clicked(self, btn_id, btn_data):
         if btn_id == "time-reduce":
@@ -39,8 +44,8 @@ class Observer:
             self.push_event(Event(EventType.QUEST_START))
         elif btn_id == "stop":
             self.push_event(Event(EventType.QUEST_STOP))
-        elif btn_id == "soundstoggle":
-            self.push_event(Event(EventType.SOUND_UN_MUTE, event_data=(btn_data == "true")))
+        elif btn_id == "volume":
+            self.push_event(Event(EventType.SOUND_VOL_CHANGED, event_data=btn_data))
 
 
     def poll_news(self, last_new):

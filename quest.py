@@ -10,9 +10,11 @@ import time
 class Quest:
     quit = False
     start_time = None
+    observer = None
     _fulltime_minutes = 90
     in_process = False
     aro = 0
+    current_altar = 0
 
     def __init__(self, name, player: Player):
         # threading.Thread.__init__(self)
@@ -30,11 +32,8 @@ class Quest:
             self.stop()
         elif event.event_type == EventType.QUEST_RELOAD:
             self.reload()
-        elif event.event_type == EventType.SOUND_UN_MUTE:
-            if event.event_data:
-                self.player.volume = self.player.prev_volume
-            else:
-                self.player.volume = 0
+        elif event.event_type == EventType.SOUND_VOL_CHANGED:
+            self.player.volume = event.event_data
 
     def reload(self):
         for door in devices.doors:
@@ -52,6 +51,7 @@ class Quest:
         time.sleep(3)
         self.player.load("secret1.mp3")
         devices.altar1.turn_on()
+        self.current_altar = 1
         time.sleep(19)
         self.player.load("door.mp3")
         devices.door1.is_open = True
@@ -64,6 +64,20 @@ class Quest:
             return time.time() - self.start_time
         else:
             return 0
+
+    def handle_altars(self, data):
+        _volumer = data[:-5]
+        volumer = []
+        for v in range(5):
+            if sum(_volumer[v*4:v*4+4]) > 0:
+                volumer.append(1)
+            else:
+                volumer.append(0)
+
+        gercon = data[-5:]
+        if self.current_altar == 1:
+            if volumer[0] == 1 and gercon[0] == 1:
+                return "01000"
 
     @property
     def fulltime_minutes(self):

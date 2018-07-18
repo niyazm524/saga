@@ -1,6 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="panel panel-primary">
+    <div class="panel-heading">Плеер</div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-3 col-xm-12">Громкость: </div>
+            <div class="col-md-6 col-xm-9">
+                <input style="width:100%" id="volume-slider" data-slider-id='volSlider' type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="{{ volume }}"/>
+            </div>
+            <div class="col-md-3 col-xm-3">
+                <input id="soundstoggle" type="checkbox" data-toggle="toggle" data-on="Звук вкл." data-off="Без звука"{% if volume != 0 %} checked{% endif %}>
+            </div>
+            <div class="col-md-12">
+                <h3>Сейчас игр.: <span id="now_playing">{{ now_playing }}</span></h3>
+            </div>
+        </div>
+    </div>
+</div>
 {% for group in layout %}
 <div class="panel panel-default">
     <div class="panel-heading">{{ group.name }}</div>

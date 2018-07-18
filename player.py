@@ -1,10 +1,12 @@
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
+from events import Event, EventType
 import os
 
 
 class Player:
     paused = None
     current_sound_file = None
+    observer = None
 
     def __init__(self, volume=60):
         self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
@@ -19,6 +21,7 @@ class Player:
     def load(self, sound_file):
         self.rc("LOAD " + "sounds/"+sound_file)
         self.current_sound_file = sound_file
+        self.observer.push_event(Event(EventType.SOUND_PLAY_START, sound_file))
         self.paused = False
 
     def pause(self):

@@ -18,7 +18,7 @@ logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 player = Player()
 quest = Quest("Скандинавская сага", player)
-observer = Observer(quest, logger, device_cfg)
+observer = Observer(quest, logger, device_cfg, player)
 
 try:
     layout_file = open("layout.json", 'r')
@@ -35,7 +35,7 @@ except ValueError:
 @app.route('/')
 def index():
     return render_template("index.html", name=quest.name, layout=layout, devices=devices, timer=quest.get_time(),
-                           ftime=quest.fulltime_minutes*60)
+                           ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
 
 
 @app.route('/setup')
@@ -70,8 +70,9 @@ def poll():
 @app.route('/altars', methods=['GET'])
 def altars():
     data = request.args.get('data', default="", type=str)
+    data = [int(x) for x in data]
     observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, data, DeviceType.ALTAR))
-    return ""
+    return quest.handle_altars(data)
 
 
 @app.template_filter('strftime')
