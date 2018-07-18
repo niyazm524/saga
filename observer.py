@@ -65,7 +65,7 @@ class Observer:
 
     def hint_clicked(self, hint_id):
         try:
-            self.player.load("hints/"+hint_id+".mp3")
+            self.player.load("hints/hint{}.mp3".format(hint_id))
         except Exception as e:
             self.logger.error(e)
 
