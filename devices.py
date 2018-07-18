@@ -34,9 +34,10 @@ class Altars(Device):
         super().__init__(DeviceType.ALTAR, ip)
         self.name = "Алтари"
 
-    def send_to_relay(self, command):
+    def send(self, command):
         try:
-            urlopen("http://{}/relay?bits={}".format(self.IP, command))
+            urlopen("http://{}/set?n={}".format(self.IP, command))
+            print("http://{}/set?n={}".format(self.IP, command))
         except (HTTPError, URLError):
             return False
         else:
@@ -49,23 +50,13 @@ class Altars(Device):
     @actived.setter
     def actived(self, activate):
         if 0 <= activate <= 5:
-            self._actived = activate
-            if activate == 0:
-                command = "30000"
-            else:
-                command = "20{}01".format(activate)
-            self.send_to_relay(command)
+            self.send(activate)
 
     def turn_off_all(self):
-        return self.send_to_relay("00000")
+        return self.send(0)
 
     def blink_all(self):
-        try:
-            urlopen("http://{}/blink".format(self.IP))
-        except (HTTPError, URLError):
-            return False
-        else:
-            return True
+        self.send(6)
 
 
 class Board(Device):
@@ -103,32 +94,83 @@ class Board(Device):
 
 class Door(Device):
     name = "Дверь"
-    from_uart = False
+    url_to_open = ""
+    url_to_close = ""
+    url_to_activate = ""
+    url_to_deactivate = ""
+    can_deactivate = False
     _is_open = False
 
-    def __init__(self, ip, gpio, index, from_uart=False):
+    def __init__(self, ip, cls_type="Дверь", index="", btn_id=None, can_activate=False):
         super().__init__(DeviceType.DOOR, ip)
-        self.gpio = gpio
-        self.index = index
-        self.name = "Дверь {}".format(index)
-        self.btn_id = "door{}".format(index)
-        self.from_uart = from_uart
+        self.name = "{} {}".format(cls_type, index)
+        if btn_id is None:
+            self.btn_id = "door{}".format(index)
+        else:
+            self.btn_id = btn_id
+        self.can_activate = can_activate
 
-    def _format_uart(self, is_open: bool):
-        return "uart=20{}0{}".format(self.gpio, int(not is_open))
-
-    def _format_esp(self, is_open: bool):
-        return "q={}{}".format("OFF" if is_open else "ON", self.gpio)
     @property
     def is_open(self):
         return self._is_open
 
+    def activate(self):
+        try:
+            urlopen(self.url_to_activate)
+        except:
+            pass
+
+    def deactivate(self):
+        if self.url_to_deactivate == "":
+            return
+        try:
+            urlopen(self.url_to_deactivate)
+        except:
+            pass
+
     @is_open.setter
     def is_open(self, is_open: bool):
         try:
-            urlopen("http://{}/?{}".format(self.IP,
-                                           self._format_uart(is_open) if self.from_uart else self._format_esp(is_open)))
+            urlopen(self.url_to_open if is_open else self.url_to_close)
         except:
             pass
 
         self._is_open = is_open
+
+
+class EspDoor(Door):
+    def __init__(self, ip, gpio, index=0, m=0, cls_type="Дверь", btn_id=None):
+        super().__init__(ip, index=index, can_activate=(m != 0), cls_type=cls_type, btn_id=btn_id)
+        self.url_to_open = "http://{}/?q={}{}".format(ip, "OFF", gpio)
+        self.url_to_close = "http://{}/?q={}{}".format(ip, "ON", gpio)
+        self.url_to_activate = "http://{}/?m={}".format(self.IP, m)
+
+
+class UartDoor(Door):
+    def __init__(self, ip, gpio, index=0, cls_type="Дверь", btn_id=None):
+        super().__init__(ip, index=index, can_activate=True, cls_type=cls_type, btn_id=btn_id)
+        self.url_to_open = "http://{}/?uart=20{}0{}".format(ip, gpio, 0)
+        self.url_to_close = "http://{}/?uart=20{}0{}".format(ip, gpio, 1)
+        self.url_to_activate = "http://{}/?{}".format(self.IP, "u=11111")
+
+
+class PhpDoor(Door):
+    def __init__(self, ip, cls_type="Дверь", btn_id=None):
+        super().__init__(ip, index="", can_activate=True, cls_type=cls_type, btn_id=btn_id)
+        self.url_to_open = "http://{}/?relay1={}".format(ip, "off")
+        self.url_to_close = "http://{}/?relay1={}".format(ip, "on")
+        self.url_to_activate = "http://{}/?script={}".format(ip, "on")
+        self.url_to_deactivate = "http://{}/?script={}".format(ip, "off")
+        self.can_deactivate = True
+
+
+class Tree(Door):
+    def __init__(self, ip, btn_id):
+        super().__init__(ip, cls_type="Древо", btn_id=btn_id, can_activate=True)
+        self.url_to_open = "http://{}/off".format(ip)
+        self.url_to_close = "http://{}/on".format(ip)
+        self.url_to_activate = "http://{}/start".format(ip)
+        self.url_to_deactivate = "http://{}/stop".format(ip)
+
+
+

@@ -67,13 +67,13 @@ class Quest:
             else:
                 self.aro -= 1
 
-        if devices.door3.is_open and \
-                self.progress < Progress.PASSED_RFID and \
-                event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                event.event_device == devices.rfid and \
-                event.event_data['detected'] == True:
-            self.progress = Progress.PASSED_RFID
-            devices.door4.is_open = True
+        # if devices.door3.is_open and \
+        #         self.progress < Progress.PASSED_RFID and \
+        #         event.event_type == EventType.SENSOR_DATA_CHANGED and \
+        #         event.event_device == devices.rfid and \
+        #         event.event_data['detected'] == True:
+        #     self.progress = Progress.PASSED_RFID
+        #     devices.door4.is_open = True
 
         if devices.door4.is_open and \
                 self.progress < Progress.PASSED_EQUALIZER and \
@@ -130,18 +130,19 @@ class Quest:
             return 0
 
     def handle_altars(self, data):
-        _volumer = data[:-5]
-        volumer = []
-        for v in range(5):
-            if sum(_volumer[v*4:v*4+4]) > 0:
-                volumer.append(1)
-            else:
-                volumer.append(0)
-
-        gercon = data[-5:]
-        if self.current_altar == 1:
-            if volumer[0] == 1 and gercon[0] == 1:
-                return "01000"
+        # _volumer = data[:-5]
+        # volumer = []
+        # for v in range(5):
+        #     if sum(_volumer[v*4:v*4+4]) > 0:
+        #         volumer.append(1)
+        #     else:
+        #         volumer.append(0)
+        #
+        # gercon = data[-5:]
+        # if self.current_altar == 1:
+        #     if volumer[0] == 1 and gercon[0] == 1:
+        #         return "01000"
+        return ""
 
     @property
     def fulltime_minutes(self):

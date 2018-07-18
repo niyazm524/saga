@@ -64,16 +64,16 @@ altars.click(function(){
     for(var i = 0; i < altars.length; i++)  {
         if(altars.eq(i).hasClass("active"))    {
             if(altars[i] == this)   {
-                sendAjax("/btn_click", "altars", (i+1).toString()+"0");
+                sendAjax("/btn_click", "altars", "0");
                 return;
             }
             else {
-                sendAjax("/btn_click", "altars", ($(this).index()+1).toString()+"1");
+                sendAjax("/btn_click", "altars", ($(this).index()+1).toString());
                 return;
             }
         }
     }
-    sendAjax("/btn_click", "altars", ($(this).index()+1).toString()+"1");
+    sendAjax("/btn_click", "altars", ($(this).index()+1).toString());
 });
 
 $(".door").click(function() {

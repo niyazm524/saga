@@ -43,6 +43,12 @@
             <div class="col-sm-6">
                 <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-open">{{ door.name }} открыть</label>
                 <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-close">{{ door.name }} закрыть</label>
+                {% if door.can_activate %}
+                <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-act">{{ door.name }} активировать</label>
+                {% endif %}
+                {% if door.can_deactivate %}
+                <label type="button" class="btn btn-block btn-warning door" id="{{ door.btn_id }}-deact">{{ door.name }} деактивировать</label>
+                {% endif %}
             </div>
             {% endfor %}
             {% for hint in room.hints %}

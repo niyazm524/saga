@@ -47,11 +47,10 @@ class Observer:
         elif btn_id == "volume":
             self.push_event(Event(EventType.SOUND_VOL_CHANGED, event_data=btn_data))
         elif btn_id == "altars":
-            if btn_data[1] == '0':
-                self.device_cfg.altars.actived = 0
-            else:
-                self.device_cfg.altars.actived = int(btn_data[0])
-            self.push_event(Event(EventType.ALTARS_WEB_REFRESH, event_data=self.device_cfg.altars.actived))
+            a = int(btn_data)
+            if 0 <= a <= 6:
+                self.device_cfg.altars.actived = a
+                self.push_event(Event(EventType.ALTARS_WEB_REFRESH, event_data=self.device_cfg.altars.actived))
 
     def door_clicked(self, door, action):
         try:
@@ -60,6 +59,10 @@ class Observer:
                 d.is_open = True
             elif action == "close":
                 d.is_open = False
+            elif action == "act":
+                d.activate()
+            elif action == "deact":
+                d.deactivate()
         except Exception as e:
             self.logger.error(e)
 

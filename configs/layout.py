@@ -9,7 +9,7 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door1]},
 
         {"name": "Маски",
-         "buttons": [device_cfg.door2]},
+         "buttons": [device_cfg.door2, device_cfg.masks_trunk]},
 
         {"name": "Сундуки",
          "buttons": [device_cfg.door3]},
@@ -18,13 +18,13 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door4]},
 
         {"name": "Эквалайзер",
-         "buttons": [device_cfg.door5]},
+         "buttons": [device_cfg.door5, device_cfg.tumba]},
 
         {"name": "Древо",
-         "buttons": [device_cfg.door6]},
+         "buttons": [device_cfg.door6, device_cfg.tree]},
 
         {"name": "Барабан",
-         "buttons": [device_cfg.door7]},
+         "buttons": [device_cfg.door7, device_cfg.barrel]},
 
 
     ]

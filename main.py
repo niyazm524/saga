@@ -95,9 +95,9 @@ def sensors():
 @app.route('/altars', methods=['GET'])
 def altars():
     data = request.args.get('data', default="", type=str)
-    data = [int(x) for x in data]
+    print(data)
     observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, data, DeviceType.ALTAR))
-    return quest.handle_altars(data)
+    return "ok"
 
 
 @app.template_filter('strftime')
