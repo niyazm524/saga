@@ -21,6 +21,7 @@ class Progress(Enum):
 class Quest:
     quit = False
     start_time = None
+    timer = None
     observer = None
     _fulltime_minutes = 90
     in_process = False
@@ -106,7 +107,7 @@ class Quest:
     def legend(self):
         self.start_time = time.time()
         self.in_process = True
-
+        self.start_timer()
         self.player.say_text("some start file")
         time.sleep(38)
         devices.altars.blink_all()
@@ -122,6 +123,8 @@ class Quest:
 
     def stop(self):
         self.in_process = False
+        if self.timer is not None:
+            self.timer.cancel()
 
     def get_time(self):
         if self.in_process:
@@ -164,3 +167,12 @@ class Quest:
             self._aro = max(new_aro, 0)
         devices.board.set_runes(self.aro)
         self.observer.push_event(Event(EventType.ARO_REFRESH, self.aro))
+
+    def start_timer(self):
+        def check_time():
+            devices.board.set_timer(6 - self.get_time() // 900)
+            check_time()
+
+        self.timer = threading.Timer(15, check_time())
+        self.timer.start()
+
