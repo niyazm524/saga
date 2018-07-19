@@ -1,10 +1,6 @@
 
 def gen_layout(device_cfg):
     rooms = [
-        {"name": "Подсказки",
-         "buttons": [],
-         "hints": []},
-
         {"name": "Комната алтарей",
          "buttons": [device_cfg.door1]},
 
@@ -15,19 +11,21 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door3]},
 
         {"name": "RFID",
-         "buttons": [device_cfg.door4],
+         "buttons": [device_cfg.door4, device_cfg.horns],
          "actlinks": [{"name": "-2 аро", "id": "minus2aro"}]},
 
         {"name": "Эквалайзер",
          "buttons": [device_cfg.door5, device_cfg.tumba]},
 
         {"name": "Древо",
-         "buttons": [device_cfg.door6, device_cfg.tree]},
+         "buttons": [device_cfg.door6, device_cfg.tree, device_cfg.ropes_locker]},
 
         {"name": "Барабан",
          "buttons": [device_cfg.door7, device_cfg.barrel]},
 
-
+        {"name": "Подсказки",
+         "buttons": [],
+         "hints": []},
     ]
 
     with open("configs/hints.csv", "r") as hints:
@@ -43,11 +41,18 @@ def gen_layout(device_cfg):
                             room["hints"].append(dict(id=line[1], desc=line[3]))
                             break
                     else:
+                        rooms
                         rooms.append({"name": line[0], "hints": [dict(id=line[1], desc=line[3])]})
                 else:
-                    rooms[0]["hints"].append(dict(id=line[1], desc=line[3]))
+                    rooms[-1]["hints"].append(dict(id=line[1], desc=line[3]))
             else:
-                rooms[room]["hints"] = [dict(id=line[1], desc=line[3])]
+                if "hints" in rooms[room]:
+                    rooms[room]["hints"].append(dict(id=line[1], desc=line[3]))
+                else:
+                    rooms[room]["hints"] = [dict(id=line[1], desc=line[3])]
 
     return rooms
 
+# import configs.device_config
+# import pprint
+# pprint.pprint(gen_layout(configs.device_config))

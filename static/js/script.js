@@ -30,6 +30,7 @@ var altars = $(".btn-altar");
 var prev_volume = vol_slider.bootstrapSlider('getValue');
 var ftime = parseInt(ftime_progress.text(), 10);
 var time = parseInt(time_progress.text(), 10);
+$("#aroprogress").css("width", (parseInt($("#arotext").text(), 10)/50*100).toString()+"%");
 
 function onSlideStop(val)   {
     prev_volume = val.value;
@@ -146,7 +147,7 @@ $.ajax({
                 }
                 else if(event.event_type == 13) {
                     $("#arotext").text(event.event_data);
-                    $("#aroprogress").css("style:"+(event.event_data/50*100).toString()+"%");
+                    $("#aroprogress").css("width", (event.event_data/50*100).toString()+"%");
                 }
             }
         }

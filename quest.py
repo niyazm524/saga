@@ -53,23 +53,26 @@ class Quest:
             self.player.volume = event.event_data
 
         if event.event_type == EventType.SENSOR_DATA_CHANGED:
-            if devices.door2.is_open and \
-                    event.event_device == devices.trunks:
+            if event.event_device == devices.trunks:
                 pin = event.event_data['pin']
                 self.logger.warning("OPENED TRUNK: " + str(pin))
                 print("OPENED TRUNK: " + str(pin))
 
                 if pin not in self.trunks_opened:
+                    print(self.trunks_current)
                     self.trunks_opened.append(pin)
 
-                    if pin != self.trunks_current[0]:
-                        self.aro -= 1
-                        self.player.load("sunduk1aro.mp3")
+                    if len(self.trunks_current) == 0 or pin != self.trunks_current[0]:
+                            self.aro -= 1
+                            self.player.load("sunduk1aro.mp3")
 
                     if pin in self.trunks_current:
                         self.trunks_current.remove(pin)
                         if len(self.trunks_current) == 0:
                             self.progress = Progress.PASSED_TRUNKS  # Команда справилась с сундуками
+
+                else:
+                    print('already opened')
 
             if event.event_device == devices.altars:
                 data = event.event_data.split(":")
@@ -153,6 +156,8 @@ class Quest:
                 self.player.load("event.mp3")
 
     def reload(self):
+        self._fulltime_minutes = 90
+        devices.board.set_timer(0)
         for em in devices.ems:
             if em.can_activate:
                 em.activate()
@@ -243,5 +248,6 @@ class Quest:
 
     def handle_timer(self):
         while self.in_process:
-            devices.board.set_timer(6 - self.get_time() // 900)
+            devices.board.set_timer(6 - int(((self.get_time() / 60) / self.fulltime_minutes)*6))
+
             time.sleep(5)
