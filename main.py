@@ -64,6 +64,15 @@ def btn_hint():
     return "ok"
 
 
+@app.route('/btn-actlink', methods=['GET', 'POST'])
+def btn_actlink():
+    id = request.args.get('id', default="", type=str)
+    if id == "":
+        return "fail"
+    observer.actlink_clicked(id)
+    return "ok"
+
+
 @app.route('/poll', methods=['GET', 'POST'])
 def poll():
     client_last_id = request.args.get('last_id', default=0, type=int)

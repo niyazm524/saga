@@ -72,6 +72,11 @@
                 {% endif %}
             </div>
             {% endfor %}
+            {% if actlinks in room %}
+            {% for actlink in room.actlinks %}
+                <label type="button" class="btn btn-block btn-success actlink" id="{{ actlink.id }}">{{ actlink.name }}</label>
+            {% endfor %}
+            {% endif %}
             {% for hint in room.hints %}
 
             <div class="col-sm-6">

@@ -76,6 +76,11 @@ class Observer:
         except Exception as e:
             self.logger.error(e)
 
+    def actlink_clicked(self, id):
+        if id == "minus2aro":
+            self.quest.aro -= 2
+            self.player.load("")
+
     def poll_news(self, last_new):
         if last_new == self.last_id:
             return None

@@ -15,7 +15,8 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door3]},
 
         {"name": "RFID",
-         "buttons": [device_cfg.door4]},
+         "buttons": [device_cfg.door4],
+         "actlinks": [{"name": "-2 аро", "id": "minus2aro"}]},
 
         {"name": "Эквалайзер",
          "buttons": [device_cfg.door5, device_cfg.tumba]},

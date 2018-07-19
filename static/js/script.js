@@ -83,6 +83,9 @@ $(".door").click(function() {
 $(".hint").click(function() {
     sendAjax("/btn-hint", this.id.slice(5), null);
 });
+$(".actlink").click(function() {
+    sendAjax("/btn-actlink", this.id, null);
+});
 
 function sendAjax(url, id, data)    {
     $.get(
