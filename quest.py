@@ -6,6 +6,7 @@ from player import Player
 import configs.device_config as devices
 import time
 from enum import Enum
+from threading import Timer
 
 
 class Progress(Enum):
@@ -29,7 +30,6 @@ class Quest:
     trunk_index = 0
     trunks_right = [2, 3, 4, 5, 6, 7]
     _aro = 0
-    current_altar = 0
 
     def __init__(self, name, player: Player):
         # threading.Thread.__init__(self)
@@ -60,7 +60,7 @@ class Quest:
             if pin == self.trunks_right[self.trunk_index]:
                 self.aro += 1
                 self.trunk_index += 1
-                if self.trunk_index == len(self.trunks_right)-1:
+                if self.trunk_index == len(self.trunks_right) - 1:
                     # Команда справилась с сундуками
                     devices.door3.is_open = True
                     self.progress = Progress.PASSED_TRUNKS
@@ -109,22 +109,38 @@ class Quest:
         self.in_process = True
         # self.start_timer()
         self.player.load("legend.mp3")
-        time.sleep(38.7)
-        devices.altars.blink_all()
-        time.sleep(18.3)
-        devices.board.start()
-        time.sleep(33)
-        self.player.load("secret1.mp3")
-        devices.altars.actived = 1
-        self.current_altar = 1
-        time.sleep(19)
-        self.player.load("door.mp3")
-        devices.door1.is_open = True
-        self.timer = threading.Thread(target=self.handle_timer, daemon=True)
-        self.timer.start()
+        Timer(38.7, devices.altars.blink_all).start()
+        Timer(57, devices.board.start).start()
+
+        def give15aro():
+            self.aro += 15
+
+        Timer(77, give15aro).start()
+
+        def start_timer():
+            self.timer = threading.Thread(target=self.handle_timer, daemon=True)
+            self.timer.start()
+
+        Timer(79, start_timer).start()
+
+        def start_altar1():
+            self.player.load("secret1.mp3")
+            devices.altars.actived = 1
+
+            def open_door1():
+                time.sleep(19)
+                self.player.load("door.mp3")
+                devices.door1.is_open = True
+
+            Timer(33, open_door1).start()
+
+        Timer(87, start_altar1).start()
 
     def stop(self):
+        self.player.stop()
         self.in_process = False
+        for door in devices.doors:
+            door.is_open = True
 
     def get_time(self):
         if self.in_process:
@@ -172,5 +188,3 @@ class Quest:
         while self.in_process:
             devices.board.set_timer(6 - self.get_time() // 900)
             time.sleep(5)
-
-
