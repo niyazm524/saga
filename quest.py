@@ -67,6 +67,7 @@ class Quest:
                     self.player.load("door.mp3")
             else:
                 self.aro -= 1
+                self.player.load("sunduk1aro.mp3")
 
         # if devices.door3.is_open and \
         #         self.progress < Progress.PASSED_RFID and \
@@ -113,7 +114,7 @@ class Quest:
         Timer(57, devices.board.start).start()
 
         def give15aro():
-            self.aro += 15
+            self.aro = 15
 
         Timer(77, give15aro).start()
 
