@@ -79,7 +79,7 @@ class Observer:
     def actlink_clicked(self, id):
         if id == "minus2aro":
             self.quest.aro -= 2
-            self.player.load("")
+            self.player.load("tumba2aro.mp3")
 
     def poll_news(self, last_new):
         if last_new == self.last_id:
