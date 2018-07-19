@@ -162,4 +162,5 @@ class Quest:
     def aro(self, new_aro):
         if new_aro <= 50:
             self._aro = max(new_aro, 0)
+        devices.board.set_runes(self.aro)
         self.observer.push_event(Event(EventType.ARO_REFRESH, self.aro))
