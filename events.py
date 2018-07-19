@@ -17,6 +17,8 @@ class EventType(Enum):
     SOUND_VOL_CHANGED = 11
     ALTARS_WEB_REFRESH = 12
     ARO_REFRESH = 13
+    MUSIC_PLAY_START = 14
+    SOUND_PLAY_STOP = 15
 
 
 class Event:

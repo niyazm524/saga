@@ -7,10 +7,11 @@ from observer import Observer
 from events import Event, EventType
 import time
 import json
-from player import Player
+from player import Player, BGPlayer
 from devices import Device, DeviceType
 import configs.device_config as device_cfg
 from configs.layout import gen_layout
+from subprocess import PIPE
 
 
 app = Flask(__name__)
@@ -18,8 +19,9 @@ logging.config.dictConfig(log_config)
 logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 player = Player()
-quest = Quest("Скандинавская сага", player)
-observer = Observer(quest, logger, device_cfg, player)
+bg_player = BGPlayer()
+quest = Quest("Скандинавская сага", player, bg_player)
+observer = Observer(quest, logger, device_cfg, player, bg_player)
 layout = gen_layout(device_cfg)
 device_cfg.altars.enable_notify(observer)
 

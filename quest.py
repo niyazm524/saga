@@ -2,7 +2,7 @@ import threading
 import logging, logging.config
 from configs.log_config import log_config
 from events import Event, EventType
-from player import Player
+from player import Player, BGPlayer
 import configs.device_config as devices
 import time
 from enum import Enum
@@ -33,11 +33,12 @@ class Quest:
     trunks_current = trunks_right
     _aro = 0
 
-    def __init__(self, name, player: Player):
+    def __init__(self, name, player: Player, bg_player: BGPlayer):
         # threading.Thread.__init__(self)
         # self.daemon = True
         self.name = name
         self.player = player
+        self.bg_player = bg_player
         logging.config.dictConfig(log_config)
         self.logger = logging.getLogger("quest")
         self.logger.info("Quest {} initiated".format(self.name))
@@ -51,6 +52,10 @@ class Quest:
             self.reload()
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
+        elif event.event_type == EventType.SOUND_PLAY_START:
+            self.bg_player.mute()
+        elif event.event_type == EventType.SOUND_PLAY_STOP:
+            self.bg_player.mute()
 
         if event.event_type == EventType.SENSOR_DATA_CHANGED:
             if event.event_device == devices.trunks:
@@ -158,6 +163,7 @@ class Quest:
     def reload(self):
         self._fulltime_minutes = 90
         devices.board.set_timer(0)
+        self.bg_player.load("reload.mp3")
         for em in devices.ems:
             if em.can_activate:
                 em.activate()
@@ -176,6 +182,7 @@ class Quest:
         self.trunks_current = self.trunks_right
 
     def legend(self):
+        self.bg_player.load_dir("sounds/music")
         self.start_time = time.time()
         self.in_process = True
         for em in devices.ems:

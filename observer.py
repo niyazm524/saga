@@ -9,14 +9,16 @@ class Observer:
     handlers = []
     last_id = 0
     last_10 = deque(maxlen=10)
-    ignored_list = [EventType.SOUND_PLAY_START, EventType.ALTARS_WEB_REFRESH]
+    ignored_list = [EventType.ALTARS_WEB_REFRESH, EventType.MUSIC_PLAY_START]
 
-    def __init__(self, quest, logger, device_cfg, player):
+    def __init__(self, quest, logger, device_cfg, player, bg_player):
         self.quest = quest
         self.quest.observer = self
         self.logger = logger
         self.player = player
         self.player.observer = self
+        self.bg_player = bg_player
+        self.bg_player.observer = self
         self.device_cfg = device_cfg
         self.devices = [getattr(device_cfg, device) for device in dir(device_cfg)
                         if isinstance(getattr(device_cfg, device), Device)]
