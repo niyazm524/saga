@@ -1,5 +1,7 @@
 from enum import Enum
 from urllib.request import urlopen, HTTPError, URLError
+from http.client import BadStatusLine
+import traceback
 import os
 
 
@@ -117,24 +119,27 @@ class Door(Device):
     def activate(self):
         try:
             urlopen(self.url_to_activate)
-        except:
-            pass
+        except BadStatusLine: pass
+        except Exception as e:
+            traceback.print_exc()
 
     def deactivate(self):
         if self.url_to_deactivate == "":
             return
         try:
             urlopen(self.url_to_deactivate)
-        except:
-            pass
+        except BadStatusLine: pass
+        except Exception as e:
+            traceback.print_exc()
 
     @is_open.setter
     def is_open(self, is_open: bool):
         try:
+            print(self.name, is_open)
             urlopen(self.url_to_open if is_open else self.url_to_close)
-        except:
-            pass
-
+        except BadStatusLine: pass
+        except Exception as e:
+            traceback.print_exc()
         self._is_open = is_open
 
 
@@ -151,8 +156,9 @@ class UartDoor(Door):
         super().__init__(ip, index=index, can_activate=True, cls_type=cls_type, btn_id=btn_id)
         self.url_to_open = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 0)
         self.url_to_close = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 1)
-        self.url_to_activate = "http://{}/?{}".format(self.IP, "u=11111")
-
+        self.url_to_activate = "http://{}/?script={}".format(self.IP, "on")
+        self.url_to_deactivate = "http://{}/?script={}".format(self.IP, "off")
+        self.can_deactivate = True
         self.activate()
 
 

@@ -87,7 +87,7 @@ def poll():
             time.sleep(1)
 
 
-@app.route('/sensors.php', methods=['GET'])
+@app.route('/sensors.php', methods=['GET', 'POST'])
 def sensors():
     remote_ip = request.remote_addr
     _detected = request.args.get('detected', default="", type=str)
