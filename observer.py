@@ -54,7 +54,7 @@ class Observer:
         elif btn_id == "aro-reduce":
             self.quest.aro -= 1
         elif btn_id == "aro-add":
-            self.quest.fulltime_minutes += 1
+            self.quest.aro += 1
 
     def door_clicked(self, door, action):
         try:
