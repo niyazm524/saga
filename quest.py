@@ -107,24 +107,24 @@ class Quest:
     def legend(self):
         self.start_time = time.time()
         self.in_process = True
-        self.start_timer()
-        self.player.say_text("some start file")
-        time.sleep(38)
+        # self.start_timer()
+        self.player.load("legend.mp3")
+        time.sleep(38.7)
         devices.altars.blink_all()
-        time.sleep(3)
+        time.sleep(18.3)
         devices.board.start()
-        time.sleep(6)
+        time.sleep(33)
         self.player.load("secret1.mp3")
         devices.altars.actived = 1
         self.current_altar = 1
         time.sleep(19)
         self.player.load("door.mp3")
         devices.door1.is_open = True
+        self.timer = threading.Thread(target=self.handle_timer, daemon=True)
+        self.timer.start()
 
     def stop(self):
         self.in_process = False
-        if self.timer is not None:
-            self.timer.cancel()
 
     def get_time(self):
         if self.in_process:
@@ -168,11 +168,9 @@ class Quest:
         devices.board.set_runes(self.aro)
         self.observer.push_event(Event(EventType.ARO_REFRESH, self.aro))
 
-    def start_timer(self):
-        def check_time():
+    def handle_timer(self):
+        while self.in_process:
             devices.board.set_timer(6 - self.get_time() // 900)
-            check_time()
+            time.sleep(5)
 
-        self.timer = threading.Timer(15, check_time())
-        self.timer.start()
 
