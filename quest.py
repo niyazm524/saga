@@ -6,7 +6,8 @@ from player import Player
 import configs.device_config as devices
 import time
 from enum import Enum
-from threading import Timer
+from timer_class import TimerClass as Timer
+from timer_class import cancel_timers
 
 
 class Progress(Enum):
@@ -50,98 +51,105 @@ class Quest:
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
 
-        if devices.door2.is_open and \
-                self.progress < Progress.PASSED_TRUNKS and \
-                event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                event.event_device == devices.trunks and \
-                event.event_data['detected'] == True:
-            pin = event.event_data['pin']
+        if event.event_type == EventType.SENSOR_DATA_CHANGED:
+            print(event)
+            if devices.door2.is_open and \
+                    event.event_device == devices.trunks and \
+                    event.event_data['detected'] is True:
+                pin = event.event_data['pin']
+                print(pin)
 
-            if pin == self.trunks_right[self.trunk_index]:
-                self.aro += 1
-                self.trunk_index += 1
-                if self.trunk_index == len(self.trunks_right) - 1:
-                    # Команда справилась с сундуками
-                    devices.door3.is_open = True
-                    self.progress = Progress.PASSED_TRUNKS
-                    self.player.load("door.mp3")
-            else:
-                self.aro -= 1
-                self.player.load("sunduk1aro.mp3")
+                if pin == self.trunks_right[self.trunk_index]:
+                    self.aro += 1
+                    self.trunk_index += 1
+                    if self.trunk_index == len(self.trunks_right) - 1:
+                        # Команда справилась с сундуками
+                        devices.door3.is_open = True
+                        self.progress = Progress.PASSED_TRUNKS
+                        self.player.load("door.mp3")
+                else:
+                    self.aro -= 1
+                    self.player.load("sunduk1aro.mp3")
 
-        # if devices.door3.is_open and \
-        #         self.progress < Progress.PASSED_RFID and \
-        #         event.event_type == EventType.SENSOR_DATA_CHANGED and \
-        #         event.event_device == devices.rfid and \
-        #         event.event_data['detected'] == True:
-        #     self.progress = Progress.PASSED_RFID
-        #     devices.door4.is_open = True
+            # if devices.door3.is_open and \
+            #         self.progress < Progress.PASSED_RFID and \
+            #         event.event_type == EventType.SENSOR_DATA_CHANGED and \
+            #         event.event_device == devices.rfid and \
+            #         event.event_data['detected'] == True:
+            #     self.progress = Progress.PASSED_RFID
+            #     devices.door4.is_open = True
 
-        if devices.door4.is_open and \
-                self.progress < Progress.PASSED_EQUALIZER and \
-                event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                event.event_device == devices.equalizer and \
-                event.event_data['detected'] == True:
-            self.progress = Progress.PASSED_EQUALIZER
-            devices.door5.is_open = True
+            if devices.door4.is_open and \
+                    self.progress < Progress.PASSED_EQUALIZER and \
+                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                    event.event_device == devices.equalizer and \
+                    event.event_data['detected'] == True:
+                self.progress = Progress.PASSED_EQUALIZER
+                devices.door5.is_open = True
 
-        if devices.door5.is_open and \
-                self.progress < Progress.PASSED_TREE and \
-                event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                event.event_device == devices.tree and \
-                event.event_data['detected'] == True:
-            self.progress = Progress.PASSED_TREE
-            devices.door6.is_open = True
+            if devices.door5.is_open and \
+                    self.progress < Progress.PASSED_TREE and \
+                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                    event.event_device == devices.tree and \
+                    event.event_data['detected'] == True:
+                self.progress = Progress.PASSED_TREE
+                devices.door6.is_open = True
 
-        if devices.door6.is_open and \
-                self.progress < Progress.PASSED_BARREL and \
-                event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                event.event_device == devices.barrel and \
-                event.event_data['detected'] == True:
-            self.progress = Progress.PASSED_BARREL
-            devices.door7.is_open = True
+            if devices.door6.is_open and \
+                    self.progress < Progress.PASSED_BARREL and \
+                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
+                    event.event_device == devices.barrel and \
+                    event.event_data['detected'] == True:
+                self.progress = Progress.PASSED_BARREL
+                devices.door7.is_open = True
 
     def reload(self):
         for door in devices.doors:
+            if door.can_activate:
+                door.activate()
             door.is_open = False
+        devices.altars.turn_off_all()
+        cancel_timers()
+
 
     def legend(self):
         self.start_time = time.time()
         self.in_process = True
         # self.start_timer()
         self.player.load("legend.mp3")
-        Timer(38.7, devices.altars.blink_all).start()
-        Timer(57, devices.board.start).start()
+        #Timer(38.7, devices.altars.blink_all).start()
+        #Timer(57, devices.board.start).start()
 
         def give15aro():
             self.aro = 15
 
-        Timer(77, give15aro).start()
+        #Timer(77, give15aro).start()
 
         def start_timer():
             self.timer = threading.Thread(target=self.handle_timer, daemon=True)
             self.timer.start()
 
-        Timer(79, start_timer).start()
+        #Timer(79, start_timer).start()
 
         def start_altar1():
             self.player.load("secret1.mp3")
             devices.altars.actived = 1
 
             def open_door1():
-                time.sleep(19)
                 self.player.load("door.mp3")
                 devices.door1.is_open = True
 
-            Timer(33, open_door1).start()
+            Timer(19, open_door1).start()
 
-        Timer(87, start_altar1).start()
+        #Timer(86, start_altar1).start()
 
     def stop(self):
+        devices.altars.turn_off_all()
         self.player.stop()
         self.in_process = False
         for door in devices.doors:
             door.is_open = True
+        cancel_timers()
 
     def get_time(self):
         if self.in_process:
