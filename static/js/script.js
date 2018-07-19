@@ -141,6 +141,10 @@ $.ajax({
                     if(event.event_data != 0)
                         $(".btn-altar").eq(event.event_data-1).addClass("active");
                 }
+                else if(event.event_type == 13) {
+                    $("#arotext").text(event.event_data);
+                    $("#aroprogress").css("style:"+(event.event_data/50*100).toString()+"%");
+                }
             }
         }
 

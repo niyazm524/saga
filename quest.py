@@ -27,7 +27,7 @@ class Quest:
     progress = Progress.JUST_STARTED
     trunk_index = 0
     trunks_right = [2, 3, 4, 5, 6, 7]
-    aro = 0
+    _aro = 0
     current_altar = 0
 
     def __init__(self, name, player: Player):
@@ -108,7 +108,7 @@ class Quest:
         self.in_process = True
 
         self.player.say_text("some start file")
-        time.sleep(3)
+        time.sleep(38)
         devices.altars.blink_all()
         time.sleep(3)
         devices.board.start()
@@ -153,3 +153,13 @@ class Quest:
         if new_ftime < 0:
             new_ftime = 0
         self._fulltime_minutes = new_ftime
+
+    @property
+    def aro(self):
+        return self._aro
+
+    @aro.setter
+    def aro(self, new_aro):
+        if new_aro <= 50:
+            self._aro = max(new_aro, 0)
+        self.observer.push_event(Event(EventType.ARO_REFRESH, self.aro))

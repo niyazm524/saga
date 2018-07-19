@@ -26,6 +26,7 @@ layout = gen_layout(device_cfg)
 @app.route('/')
 def index():
     return render_template("index.html", quest=quest, layout=layout, devices=device_cfg, timer=quest.get_time(),
+                           aro=quest.aro,
                            ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
 
 

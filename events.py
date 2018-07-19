@@ -16,6 +16,7 @@ class EventType(Enum):
     FTIME_SYNC = 10
     SOUND_VOL_CHANGED = 11
     ALTARS_WEB_REFRESH = 12
+    ARO_REFRESH = 13
 
 
 class Event():
