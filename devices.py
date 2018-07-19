@@ -1,4 +1,5 @@
 from enum import Enum
+import events
 from urllib.request import urlopen, HTTPError, URLError
 from http.client import BadStatusLine
 import traceback
@@ -30,11 +31,16 @@ class Device:
 
 
 class Altars(Device):
+
     _actived = 0
 
     def __init__(self, ip):
         super().__init__(DeviceType.ALTAR, ip)
         self.name = "Алтари"
+        self.observer = None
+
+    def enable_notify(self, observer):
+        self.observer = observer
 
     def send(self, command):
         try:
@@ -53,6 +59,8 @@ class Altars(Device):
     def actived(self, activate):
         if 0 <= activate <= 5:
             self.send(activate)
+            if self.observer is not None:
+                self.observer.push_event(events.Event(events.EventType.ALTARS_WEB_REFRESH, event_data=activate))
 
     def turn_off_all(self):
         return self.send(0)
@@ -179,6 +187,14 @@ class Tree(Door):
         self.url_to_close = "http://{}/on".format(self.IP)
         self.url_to_activate = "http://{}/start".format(self.IP)
         self.url_to_deactivate = "http://{}/stop".format(self.IP)
+
+    def reload(self):
+        try:
+            urlopen("http://{}/reload".format(self.IP))
+        except BadStatusLine: pass
+        except Exception as e:
+            traceback.print_exc()
+
 
 
 

@@ -79,12 +79,13 @@
             {% endfor %}
             </div>
             {% endif %}
-            {% for hint in room.hints %}
-
             <div class="col-sm-6">
+                {% for hint in room.hints %}
+
                 <label type="button" class="btn btn-block btn-info hint" id="hint-{{ hint.id }}">{{ hint.desc }}</label>
+
+                {% endfor %}
             </div>
-            {% endfor %}
         </div>
     </div>
 </div>

@@ -50,7 +50,6 @@ class Observer:
             a = int(btn_data)
             if 0 <= a <= 6:
                 self.device_cfg.altars.actived = a
-                self.push_event(Event(EventType.ALTARS_WEB_REFRESH, event_data=self.device_cfg.altars.actived))
         elif btn_id == "aro-reduce":
             self.quest.aro -= 1
         elif btn_id == "aro-add":

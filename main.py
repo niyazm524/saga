@@ -21,6 +21,8 @@ player = Player()
 quest = Quest("Скандинавская сага", player)
 observer = Observer(quest, logger, device_cfg, player)
 layout = gen_layout(device_cfg)
+device_cfg.altars.enable_notify(observer)
+
 
 
 @app.route('/')

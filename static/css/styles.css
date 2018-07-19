@@ -13,6 +13,9 @@
     background-color: #fff;
     color: #337ab7;
 }
+.btn-altar {
+    margin-bottom:5px;
+}
 .btn-altar.active:hover {
     background-color: #eee;
     color: #337ab7;
@@ -20,3 +23,5 @@
 .autoadded label {
     margin-bottom:5px;
 }
+
+html, body { overflow-x: hidden; }

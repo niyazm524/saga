@@ -19,7 +19,7 @@ class EventType(Enum):
     ARO_REFRESH = 13
 
 
-class Event():
+class Event:
     event_id = None
     event_type = None
     event_time = time.time()

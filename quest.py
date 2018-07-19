@@ -164,6 +164,8 @@ class Quest:
         for door in devices.doors:
             if door.can_activate:
                 door.activate()
+
+        devices.tree.reload()
         time.sleep(5)
 
         for door in devices.doors:
@@ -176,6 +178,7 @@ class Quest:
     def legend(self):
         self.start_time = time.time()
         self.in_process = True
+        devices.tree.activate()
         # self.start_timer()
         self.player.load("legend.mp3")
         Timer(38.7, devices.altars.blink_all).start()
