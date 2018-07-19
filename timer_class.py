@@ -9,9 +9,6 @@ class TimerClass(Timer):
 
         TimerClass.timers.append(self)
 
-    def __del__(self):
-        TimerClass.timers.remove(self)
-
     @staticmethod
     def cancel_timers():
         for tim in TimerClass.timers:

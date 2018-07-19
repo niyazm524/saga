@@ -29,6 +29,14 @@ class Device:
         self.IP = "10.0.110."+str(ip)
         self.btn_id = btn_id
 
+    @staticmethod
+    def get_req(url):
+        try:
+            urlopen(url)
+        except BadStatusLine: pass
+        except Exception as e:
+            print(url)
+            traceback.print_exc()
 
 class Altars(Device):
 
@@ -108,7 +116,9 @@ class Door(Device):
     url_to_close = ""
     url_to_activate = ""
     url_to_deactivate = ""
+    url_to_start = ""
     can_deactivate = False
+    can_start = False
     _is_open = False
 
     def __init__(self, ip, cls_type="Дверь", index="", btn_id=None, can_activate=False):
@@ -125,29 +135,21 @@ class Door(Device):
         return self._is_open
 
     def activate(self):
-        try:
-            urlopen(self.url_to_activate)
-        except BadStatusLine: pass
-        except Exception as e:
-            traceback.print_exc()
+        Device.get_req(self.url_to_activate)
 
     def deactivate(self):
         if self.url_to_deactivate == "":
             return
-        try:
-            urlopen(self.url_to_deactivate)
-        except BadStatusLine: pass
-        except Exception as e:
-            traceback.print_exc()
+        Device.get_req(self.url_to_deactivate)
+
+    def start(self):
+        if self.url_to_start == "":
+            return
+        Device.get_req(self.url_to_start)
 
     @is_open.setter
     def is_open(self, is_open: bool):
-        try:
-            print(self.name, is_open)
-            urlopen(self.url_to_open if is_open else self.url_to_close)
-        except BadStatusLine: pass
-        except Exception as e:
-            traceback.print_exc()
+        Device.get_req(self.url_to_open if is_open else self.url_to_close)
         self._is_open = is_open
 
 
@@ -161,13 +163,10 @@ class EspDoor(Door):
 
 class UartDoor(Door):
     def __init__(self, ip, gpio, index=0, cls_type="Дверь", btn_id=None):
-        super().__init__(ip, index=index, can_activate=True, cls_type=cls_type, btn_id=btn_id)
+        super().__init__(ip, index=index, can_activate=False, cls_type=cls_type, btn_id=btn_id)
         self.url_to_open = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 0)
         self.url_to_close = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 1)
-        self.url_to_activate = "http://{}/?script={}".format(self.IP, "on")
-        self.url_to_deactivate = "http://{}/?script={}".format(self.IP, "off")
-        self.can_deactivate = True
-        self.activate()
+        self.can_deactivate = False
 
 
 class PhpDoor(Door):
@@ -180,20 +179,17 @@ class PhpDoor(Door):
         self.can_deactivate = True
 
 
-class Tree(Door):
-    def __init__(self, ip, btn_id):
-        super().__init__(ip, cls_type="Древо", btn_id=btn_id, can_activate=True)
+class AlexDoor(Door):
+    def __init__(self, ip, btn_id, index="", cls_type="Дверь"):
+        super().__init__(ip, cls_type=cls_type, btn_id=btn_id, can_activate=True, index=index)
         self.url_to_open = "http://{}/off".format(self.IP)
         self.url_to_close = "http://{}/on".format(self.IP)
-        self.url_to_activate = "http://{}/start".format(self.IP)
+        self.url_to_activate = "http://{}/reload".format(self.IP)
         self.url_to_deactivate = "http://{}/stop".format(self.IP)
+        self.url_to_start = "http://{}/start".format(self.IP)
+        self.can_deactivate = True
+        self.can_start = True
 
-    def reload(self):
-        try:
-            urlopen("http://{}/reload".format(self.IP))
-        except BadStatusLine: pass
-        except Exception as e:
-            traceback.print_exc()
 
 
 

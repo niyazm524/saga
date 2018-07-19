@@ -9,7 +9,7 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door1]},
 
         {"name": "Маски",
-         "buttons": [device_cfg.door2, device_cfg.masks_trunk]},
+         "buttons": [device_cfg.door2]},
 
         {"name": "Сундуки",
          "buttons": [device_cfg.door3]},

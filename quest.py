@@ -28,7 +28,9 @@ class Quest:
     in_process = False
     progress = Progress.JUST_STARTED
     trunk_index = 0
-    trunks_right = [2, 3, 4, 5, 6, 7]
+    trunks_right = [1, 2, 3, 4, 5, 6]
+    trunks_opened = []
+    trunks_current = trunks_right
     _aro = 0
 
     def __init__(self, name, player: Player):
@@ -51,23 +53,23 @@ class Quest:
             self.player.volume = event.event_data
 
         if event.event_type == EventType.SENSOR_DATA_CHANGED:
-            print(event)
             if devices.door2.is_open and \
                     event.event_device == devices.trunks:
                 pin = event.event_data['pin']
-                print(pin)
+                self.logger.warning("OPENED TRUNK: " + str(pin))
+                print("OPENED TRUNK: " + str(pin))
 
-                if pin == 1:
-                    return
+                if pin not in self.trunks_opened:
+                    self.trunks_opened.append(pin)
 
-                if pin == self.trunks_right[self.trunk_index]:
-                    self.trunk_index += 1
-                    if self.trunk_index == len(self.trunks_right):
-                        # Команда справилась с сундуками
-                        self.progress = Progress.PASSED_TRUNKS
-                else:
-                    self.aro -= 1
-                    self.player.load("sunduk1aro.mp3")
+                    if pin != self.trunks_current[0]:
+                        self.aro -= 1
+                        self.player.load("sunduk1aro.mp3")
+
+                    if pin in self.trunks_current:
+                        self.trunks_current.remove(pin)
+                        if len(self.trunks_current) == 0:
+                            self.progress = Progress.PASSED_TRUNKS  # Команда справилась с сундуками
 
             if event.event_device == devices.altars:
                 data = event.event_data.split(":")
@@ -76,6 +78,7 @@ class Quest:
                     self.aro -= 1
                     self.player.load("minusAro.mp3")
                 else:
+                    devices.altars.turn_off_all()
                     if data[0] == '1':
                         self.aro += 2
                         self.player.load("plus2Aro.mp3")
@@ -126,7 +129,8 @@ class Quest:
                         time.sleep(6)
                         self.player.load("story5.mp3")
                         time.sleep(19)
-                        devices.altars.turn_off_all()
+                        devices.door7.is_open = True
+                        self.player.load('door.mp3')
 
             # if devices.door3.is_open and \
             #         self.progress < Progress.PASSED_RFID and \
@@ -136,49 +140,42 @@ class Quest:
             #     self.progress = Progress.PASSED_RFID
             #     devices.door4.is_open = True
 
-            if devices.door4.is_open and \
-                    self.progress < Progress.PASSED_EQUALIZER and \
-                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                    event.event_device == devices.equalizer and \
-                    event.event_data['detected'] == True:
-                self.progress = Progress.PASSED_EQUALIZER
-                devices.door5.is_open = True
+            if event.event_device == devices.door5 and \
+                    event.event_data['detected'] is True:
+                self.player.load("event.mp3")
 
-            if devices.door5.is_open and \
-                    self.progress < Progress.PASSED_TREE and \
-                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                    event.event_device == devices.tree and \
-                    event.event_data['detected'] == True:
-                self.progress = Progress.PASSED_TREE
-                devices.door6.is_open = True
+            if event.event_device == devices.tree and \
+                    event.event_data['detected'] is True:
+                self.player.load("event.mp3")
 
-            if devices.door6.is_open and \
-                    self.progress < Progress.PASSED_BARREL and \
-                    event.event_type == EventType.SENSOR_DATA_CHANGED and \
-                    event.event_device == devices.barrel and \
-                    event.event_data['detected'] == True:
-                self.progress = Progress.PASSED_BARREL
-                devices.door7.is_open = True
+            if event.event_device == devices.barrel and \
+                    event.event_data['detected'] is True:
+                self.player.load("event.mp3")
 
     def reload(self):
-        for door in devices.doors:
-            if door.can_activate:
-                door.activate()
+        for em in devices.ems:
+            if em.can_activate:
+                em.activate()
+                time.sleep(0.2)
 
-        devices.tree.reload()
         time.sleep(5)
 
-        for door in devices.doors:
+        for em in devices.ems:
             time.sleep(0.5)
-            door.is_open = False
+            em.is_open = False
         devices.altars.turn_off_all()
         Timer.cancel_timers()
         self.aro = 0
+        self.trunk_index = 0
+        self.trunks_opened = []
+        self.trunks_current = self.trunks_right
 
     def legend(self):
         self.start_time = time.time()
         self.in_process = True
-        devices.tree.activate()
+        for em in devices.ems:
+            if em.can_start:
+                em.start()
         # self.start_timer()
         self.player.load("legend.mp3")
         Timer(38.7, devices.altars.blink_all).start()
@@ -211,8 +208,8 @@ class Quest:
         devices.altars.turn_off_all()
         self.player.stop()
         self.in_process = False
-        for door in devices.doors:
-            door.is_open = True
+        for em in devices.ems:
+            em.is_open = True
             time.sleep(0.5)
         Timer.cancel_timers()
 
