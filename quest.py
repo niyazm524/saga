@@ -75,54 +75,58 @@ class Quest:
                 if data[1] == '0':
                     self.aro -= 1
                     self.player.load("minusAro.mp3")
-                elif data[1] == '1':
-                    if data[0] == 1:
+                else:
+                    if data[0] == '1':
                         self.aro += 2
                         self.player.load("plus2Aro.mp3")
                         time.sleep(4)
                         self.player.load("story1.mp3")
                         time.sleep(27)
                         self.player.load("secret2.mp3")
+                        devices.altars.actived = 2
                         time.sleep(17)
                         devices.door2.is_open = True
                         self.player.load('door.mp3')
-                    if data[0] == 2:
+                    if data[0] == '2':
                         self.aro += 3
                         self.player.load("plus3Aro.mp3")
                         time.sleep(6)
                         self.player.load("story2.mp3")
                         time.sleep(33)
                         self.player.load("secret3.mp3")
+                        devices.altars.actived = 3
                         time.sleep(19)
                         devices.door3.is_open = True
                         self.player.load('door.mp3')
-                    if data[0] == 3:
+                    if data[0] == '3':
                         self.aro += 4
                         self.player.load("plus4Aro.mp3")
                         time.sleep(6)
                         self.player.load("story3.mp3")
                         time.sleep(36)
                         self.player.load("secret4.mp3")
+                        devices.altars.actived = 4
                         time.sleep(16)
                         devices.door4.is_open = True
                         self.player.load('door.mp3')
-                    if data[0] == 4:
+                    if data[0] == '4':
                         self.aro += 5
                         self.player.load("plus5Aro.mp3")
                         time.sleep(6)
                         self.player.load("story4.mp3")
                         time.sleep(28)
                         self.player.load("secret5.mp3")
+                        devices.altars.actived = 5
                         time.sleep(18)
                         devices.door6.is_open = True
                         self.player.load('door.mp3')
-                    if data[0] == 5:
+                    if data[0] == '5':
                         self.aro += 6
                         self.player.load("plus6Aro.mp3")
                         time.sleep(6)
                         self.player.load("story5.mp3")
-                        # time.sleep(19)
-                        # ?
+                        time.sleep(19)
+                        devices.altars.turn_off_all()
 
             # if devices.door3.is_open and \
             #         self.progress < Progress.PASSED_RFID and \

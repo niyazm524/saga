@@ -105,8 +105,8 @@ def sensors():
 @app.route('/altars', methods=['GET'])
 def altars():
     data = request.args.get('data', default="", type=str)
-    print(data)
-    observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, data, DeviceType.ALTAR))
+    print("ALTAR REQUEST WITH DATA ", data)
+    observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, data, event_device=device_cfg.altars))
     return "ok"
 
 
