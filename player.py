@@ -9,7 +9,7 @@ class Player:
     observer = None
 
     def __init__(self, volume=60):
-        self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=PIPE, stderr=STDOUT)
+        self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
         self._volume = volume
         self.volume = volume
         self.prev_volume = volume
@@ -21,7 +21,10 @@ class Player:
     def load(self, sound_file):
         self.rc("LOAD " + "sounds/"+sound_file)
         self.current_sound_file = sound_file
-        self.observer.push_event(Event(EventType.SOUND_PLAY_START, sound_file))
+        try:
+            self.observer.push_event(Event(EventType.SOUND_PLAY_START, sound_file))
+        except:
+            pass
         self.paused = False
 
     def pause(self):
@@ -50,5 +53,4 @@ class Player:
         self.rc("GAIN "+str(new_volume))
         self.prev_volume = self._volume
         self._volume = new_volume
-
 

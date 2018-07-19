@@ -152,7 +152,7 @@ class UartDoor(Door):
         self.url_to_open = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 0)
         self.url_to_close = "http://{}/?uart=20{}0{}".format(self.IP, gpio, 1)
         self.url_to_activate = "http://{}/?{}".format(self.IP, "u=11111")
-        
+
         self.activate()
 
 

@@ -21,7 +21,7 @@ class Observer:
         self.devices = [getattr(device_cfg, device) for device in dir(device_cfg)
                         if isinstance(getattr(device_cfg, device), Device)]
         self.dev_names = [device for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
-        self.pool = ThreadPoolExecutor(5)
+        self.pool = ThreadPoolExecutor(15)
 
     def push_event(self, event: Event):
         self.last_id += 1
