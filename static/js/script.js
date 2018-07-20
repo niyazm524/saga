@@ -32,6 +32,8 @@ var ftime = parseInt(ftime_progress.text(), 10);
 var time = parseInt(time_progress.text(), 10);
 $("#aroprogress").css("width", (parseInt($("#arotext").text(), 10)/50*100).toString()+"%");
 
+
+
 function onSlideStop(val)   {
     prev_volume = val.value;
 
@@ -123,12 +125,26 @@ $.ajax({
                 var event = jdata.events[i];
                 if(event.event_type == 3)  {
                     in_process = true;
+                    if(!$("#btn-start").hasClass("active")){
+                        $("#btn-start").addClass("active");
+                    }
                 }
                 else if(event.event_type == 4) {
                     in_process = false;
+                    if($("#btn-start").hasClass("active")){
+                        $("#btn-start").removeClass("active");
+                    }
+
                 }
-                else if(event.event_type == 6)
-                    $("#now_playing").text(event.event_data);
+                else if(event.event_type == 5) {
+                    in_process = false;
+                    if(!$("#btn-reload").hasClass("active")){
+                        $("#btn-reload").addClass("active");
+                    }
+                    if($("#btn-start").hasClass("active")){
+                        $("#btn-start").removeClass("active");
+                    }
+                }
                 else if(event.event_type == 10) {
                     ftime = event.event_data*60;
                     updateTimeProgress();
@@ -149,10 +165,16 @@ $.ajax({
                     $("#arotext").text(event.event_data);
                     $("#aroprogress").css("width", (event.event_data/50*100).toString()+"%");
                 }
+                else if(event.event_type == 16) {
+                    in_process = false;
+                    if($("#btn-reload").hasClass("active")){
+                        $("#btn-reload").removeClass("active");
+                    }
+                }
             }
         }
 
-        poll()
+        poll();
     },
     error: function(jqXHR, textStatus, errorThrown) {
         if(textStatus !== "timeout")    {
@@ -161,7 +183,7 @@ $.ajax({
             }
 
             setTimeout(poll, 3000);
-        } else poll()
+        } else poll();
     }
 });
 

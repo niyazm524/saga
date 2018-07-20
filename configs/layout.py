@@ -5,7 +5,11 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door1]},
 
         {"name": "Маски",
-         "buttons": [device_cfg.door2]},
+         "buttons": [device_cfg.door2],
+         "actlinks": [
+             {"name": "Сундук масок открыть", "id": "masks_open"},
+             {"name": "Сундук масок закрыть", "id": "masks_close"}
+         ]},
 
         {"name": "Сундуки",
          "buttons": [device_cfg.door3]},
@@ -21,7 +25,7 @@ def gen_layout(device_cfg):
          "buttons": [device_cfg.door6, device_cfg.tree, device_cfg.ropes_locker]},
 
         {"name": "Барабан",
-         "buttons": [device_cfg.door7, device_cfg.barrel]},
+         "buttons": [device_cfg.door7, device_cfg.barrel, device_cfg.runes]},
 
         {"name": "Подсказки",
          "buttons": [],
@@ -41,15 +45,18 @@ def gen_layout(device_cfg):
                             room["hints"].append(dict(id=line[1], desc=line[3]))
                             break
                     else:
-                        rooms
                         rooms.append({"name": line[0], "hints": [dict(id=line[1], desc=line[3])]})
+                        if line[0] == "Концовки":
+                            rooms[-1]["actlinks"] = [{"name": "Активировать допы", "id": "enable_dops"}]
                 else:
-                    rooms[-1]["hints"].append(dict(id=line[1], desc=line[3]))
+                    rooms[7]["hints"].append(dict(id=line[1], desc=line[3]))
             else:
-                if "hints" in rooms[room]:
-                    rooms[room]["hints"].append(dict(id=line[1], desc=line[3]))
+                if "hints" in rooms[room-1]:
+                    rooms[room-1]["hints"].append(dict(id=line[1], desc=line[3]))
                 else:
-                    rooms[room]["hints"] = [dict(id=line[1], desc=line[3])]
+                    rooms[room-1]["hints"] = [dict(id=line[1], desc=line[3])]
+
+
 
     return rooms
 

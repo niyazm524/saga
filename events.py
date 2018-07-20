@@ -19,6 +19,7 @@ class EventType(Enum):
     ARO_REFRESH = 13
     MUSIC_PLAY_START = 14
     SOUND_PLAY_STOP = 15
+    QUEST_RELOADED = 16
 
 
 class Event:

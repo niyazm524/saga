@@ -23,11 +23,14 @@ tumba = PhpDoor(107, cls_type="Тумба", btn_id="tumba")
 tree = AlexDoor(109, btn_id="tree", cls_type="Древо", )
 barrel = AlexDoor(112, cls_type="Барабан", btn_id="barrel")
 trunks = Device(DeviceType.TRUNKS, 105)
-
+statues = PhpDoor(110, "Статуи", "statues")
 horns = PhpDoor(106, "Рога", "horns")
 ropes_locker = EspDoor(111, gpio=7, cls_type="Шкаф с канатами", btn_id="ropes_locker")
 
+runes = AlexDoor(113, "runes", cls_type="Руны")
+
 ems = [door1, door2, door3, door4, door5, door6, door7, tumba, tree, barrel, horns, ropes_locker]
 
-sensors = [trunks, tree, door5, barrel]
+sensors = [trunks, tree, door5, barrel, runes, statues, horns]
 
+dops = [runes, horns, statues, ropes_locker]

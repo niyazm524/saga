@@ -3,13 +3,14 @@ from pprint import pformat
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from devices import Device
+import time
 
 
 class Observer:
     handlers = []
     last_id = 0
     last_10 = deque(maxlen=10)
-    ignored_list = [EventType.ALTARS_WEB_REFRESH, EventType.MUSIC_PLAY_START]
+    ignored_list = [EventType.ALTARS_WEB_REFRESH, EventType.MUSIC_PLAY_START, EventType.QUEST_RELOADED]
 
     def __init__(self, quest, logger, device_cfg, player, bg_player):
         self.quest = quest
@@ -81,6 +82,18 @@ class Observer:
         if id == "minus2aro":
             self.quest.aro -= 2
             self.player.load("tumba2aro.mp3")
+        elif id == "enable_dops":
+            self.device_cfg.runes.start()
+            for dop_dev in self.device_cfg.dops:
+                dop_dev.is_open = True
+        elif id == "masks_open":
+            for i in range(10):
+                Device.get_req("http://10.0.110.104/?u=20100")
+                time.sleep(0.2)
+        elif id == "masks_close":
+            for i in range(10):
+                Device.get_req("http://10.0.110.104/?u=20101")
+                time.sleep(0.2)
 
     def poll_news(self, last_new):
         if last_new == self.last_id:

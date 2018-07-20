@@ -19,7 +19,7 @@ logging.config.dictConfig(log_config)
 logger = logging.getLogger("saga")
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 player = Player()
-bg_player = BGPlayer()
+bg_player = BGPlayer(60)
 quest = Quest("Скандинавская сага", player, bg_player)
 observer = Observer(quest, logger, device_cfg, player, bg_player)
 layout = gen_layout(device_cfg)

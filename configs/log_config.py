@@ -31,6 +31,10 @@ log_config = {
             'handlers': ['console', 'fileHandler'],
             'level': 'DEBUG',
             'propagate': False
-        }
+        },
+        'devices': {
+            'handlers': ['console', 'fileHandler'],
+            'level': 'ERROR',
+        },
     },
 }

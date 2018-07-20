@@ -1,12 +1,13 @@
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import threading
 from events import Event, EventType
-import os
+import os, signal
 
 
 class BGPlayer:
     paused = None
     observer = None
+    vol_down = False
     proc = None
 
     def __init__(self, volume=60):
@@ -18,17 +19,17 @@ class BGPlayer:
     def load(self, sound_file):
         if self.proc is not None:
             self.proc.terminate()
-        self.proc = Popen(["mpg321", "--loop 0", "-K", "--gain {}".format(self.volume), "sounds/"+sound_file], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
+        self.proc = Popen(["mpg321", "--loop", "0", "-K", "--gain", str(self.volume), "sounds/"+sound_file], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
         try:
-            self.observer.push_event(Event(EventType.SOUND_PLAY_START, sound_file))
+            self.observer.push_event(Event(EventType.MUSIC_PLAY_START, sound_file))
         except:
             pass
         self.paused = False
 
     def load_dir(self, directory):
         if self.proc is not None:
-            self.proc.terminate()
-        self.proc = Popen(["mpg321", "--loop 0", "-B", "-K", "--gain {}".format(self.volume), directory], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
+            self.proc.kill()
+        self.proc = Popen(["mpg321", "--loop", "0", "-B", "-K", "--gain", str(self.volume), directory], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
         try:
             self.observer.push_event(Event(EventType.MUSIC_PLAY_START_PLAY_START))
         except:
@@ -37,11 +38,28 @@ class BGPlayer:
 
     def stop(self):
         if self.proc is not None:
-            self.proc.terminate()
+            self.proc.kill()
+
+    def volume_shift(self, vol):
+        if vol > 0:
+            sym = b"*"
+            if self.vol_down is False:
+                return
+            self.vol_down = False
+        elif vol < 0:
+            sym = b"/"
+            if self.vol_down is True:
+                return
+            self.vol_down = True
+        else:
+            return
+
+        self.proc.stdin.write(sym * (abs(vol) // 3 + 1))
+        self.proc.stdin.flush()
 
     def mute(self):
         self.proc.stdin.write(b"m")
-
+        self.proc.stdin.flush()
 
 
 class Player:
@@ -54,7 +72,7 @@ class Player:
         self._volume = volume
         self.volume = volume
         self.prev_volume = volume
-        self.thread = threading.Thread(target=self.std_read, args=())
+        self.thread = threading.Thread(target=self.std_read, args=(), daemon=True)
         self.thread.start()
 
     def rc(self, command: str):

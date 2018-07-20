@@ -4,6 +4,12 @@ from urllib.request import urlopen, HTTPError, URLError
 from http.client import BadStatusLine
 import traceback
 import os
+from configs.log_config import log_config
+import logging.config
+
+
+logging.config.dictConfig(log_config)
+logger = logging.getLogger("devices")
 
 
 class DeviceType(Enum):
@@ -14,9 +20,11 @@ class DeviceType(Enum):
     BARREL = 5
     TREE = 6
     EQUALIZER = 7
+    STATUES = 8
 
 
 class Device:
+    global logger
     device_type = None
     control = None
     actions = []
@@ -35,8 +43,9 @@ class Device:
             urlopen(url)
         except BadStatusLine: pass
         except Exception as e:
-            print(url)
-            traceback.print_exc()
+            logger.error(e)
+            pass
+
 
 class Altars(Device):
 

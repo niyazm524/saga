@@ -23,6 +23,7 @@ class Quest:
     quit = False
     start_time = None
     timer = None
+    reloaded = False
     observer = None
     _fulltime_minutes = 90
     in_process = False
@@ -39,6 +40,8 @@ class Quest:
         self.name = name
         self.player = player
         self.bg_player = bg_player
+        self.bg_volume_shift = 63     # self.bg_player.volume - int(self.bg_player.volume / 100 * 5)
+        print(self.bg_volume_shift)
         logging.config.dictConfig(log_config)
         self.logger = logging.getLogger("quest")
         self.logger.info("Quest {} initiated".format(self.name))
@@ -53,13 +56,15 @@ class Quest:
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
         elif event.event_type == EventType.SOUND_PLAY_START:
-            self.bg_player.mute()
+            self.bg_player.volume_shift(-self.bg_volume_shift)
         elif event.event_type == EventType.SOUND_PLAY_STOP:
-            self.bg_player.mute()
+            self.bg_player.volume_shift(+self.bg_volume_shift)
 
-        if event.event_type == EventType.SENSOR_DATA_CHANGED:
+        if event.event_type == EventType.SENSOR_DATA_CHANGED and self.in_process:
             if event.event_device == devices.trunks:
                 pin = event.event_data['pin']
+                if pin == 0:
+                    return
                 self.logger.warning("OPENED TRUNK: " + str(pin))
                 print("OPENED TRUNK: " + str(pin))
 
@@ -136,9 +141,6 @@ class Quest:
                         self.player.load("plus6Aro.mp3")
                         time.sleep(6)
                         self.player.load("story5.mp3")
-                        time.sleep(19)
-                        devices.door7.is_open = True
-                        self.player.load('door.mp3')
 
             # if devices.door3.is_open and \
             #         self.progress < Progress.PASSED_RFID and \
@@ -159,50 +161,66 @@ class Quest:
             if event.event_device == devices.barrel and \
                     event.event_data['detected'] is True:
                 self.player.load("event.mp3")
+                devices.door7.is_open = True
+
+            if event.event_device in [devices.runes, devices.statues, devices.horns] and \
+                    event.event_data['detected'] is True:
+                self.player.load("plus5Aro.mp3")
+                self.aro += 5
 
     def reload(self):
+        self.in_process = False
+        self.reloaded = True
+        self.aro = 0
         self._fulltime_minutes = 90
         devices.board.set_timer(0)
         self.bg_player.load("reload.mp3")
+        print("runes act")
+
         for em in devices.ems:
             if em.can_activate:
                 em.activate()
                 time.sleep(0.2)
 
-        time.sleep(5)
+        for dop in devices.dops:
+            dop.activate()
+            time.sleep(0.2)
 
+        time.sleep(5)
         for em in devices.ems:
             time.sleep(0.5)
             em.is_open = False
         devices.altars.turn_off_all()
         Timer.cancel_timers()
-        self.aro = 0
         self.trunk_index = 0
         self.trunks_opened = []
         self.trunks_current = self.trunks_right
 
     def legend(self):
+        self.observer.push_event(Event(EventType.QUEST_RELOADED))
+        print("DFGHJK")
+        self.reloaded = False
         self.bg_player.load_dir("sounds/music")
         self.start_time = time.time()
         self.in_process = True
         for em in devices.ems:
-            if em.can_start:
+            if em.can_start and em not in devices.dops:
                 em.start()
-        # self.start_timer()
+
         self.player.load("legend.mp3")
         Timer(38.7, devices.altars.blink_all).start()
-        Timer(57, devices.board.start).start()
+        Timer(56, devices.board.start).start()
 
         def give15aro():
             self.aro = 15
 
-        Timer(77, give15aro).start()
+        Timer(76.7, give15aro).start()
 
         def start_timer():
             self.timer = threading.Thread(target=self.handle_timer, daemon=True)
             self.timer.start()
 
-        Timer(79, start_timer).start()
+        Timer(79.3, start_timer).start()
 
         def start_altar1():
             self.player.load("secret1.mp3")
@@ -217,9 +235,12 @@ class Quest:
         Timer(86, start_altar1).start()
 
     def stop(self):
+        self.observer.push_event(Event(EventType.QUEST_RELOADED))
         devices.altars.turn_off_all()
         self.player.stop()
+        self.bg_player.stop()
         self.in_process = False
+        self.reloaded = False
         for em in devices.ems:
             em.is_open = True
             time.sleep(0.5)
@@ -258,3 +279,6 @@ class Quest:
             devices.board.set_timer(6 - int(((self.get_time() / 60) / self.fulltime_minutes)*6))
 
             time.sleep(5)
+
+    def __del__(self):
+        self.bg_player.stop()
