@@ -90,6 +90,14 @@ $(".actlink").click(function() {
     sendAjax("/btn-actlink", this.id, null);
 });
 
+$(".navbar-toggle").click(function() {
+    if(!$(this).hasClass("collapsed"))
+        $("body").css("padding-top", "70px");
+    else {
+        $("body").css("padding-top", "320px");
+    }
+});
+
 function sendAjax(url, id, data)    {
     $.get(
       url,
