@@ -49,7 +49,6 @@ def gen_layout(device_cfg):
                 if len(line[0]) > 0:
                     for room in rooms:
                         if room["name"] == line[0]:
-                            print(line[0])
                             if "hints" in room:
                                 room["hints"].append(dict(id=line[1], desc=line[3]))
                             else:

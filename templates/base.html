@@ -25,128 +25,173 @@
 <body>
 
 
-
-
 <!--<nav class="navbar navbar-fixed-top">-->
-  <!--<div class="container-fluid">-->
+<!--<div class="container-fluid">-->
 
-      <!--<div class="panel panel-primary">-->
-        <!--<div class="panel-heading">Время и управление</div>-->
+<!--<div class="panel panel-primary">-->
+<!--<div class="panel-heading">Время и управление</div>-->
 
-        <!---->
-    <!--</div>-->
+<!---->
+<!--</div>-->
 
-  <!--</div>-->
+<!--</div>-->
 <!--</nav>-->
 
 <nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-    </div>
-    <div class="collapse navbar-collapse" id="myNavbar">
-
-        <div class="panel-body">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="alert alert-danger hidden" id="con-issues" role="alert">
-                        Соединение с сервером потеряно!
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default" id="btn-time-reduce">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </button>
-                </div>
-                <div class="col-md-10 col-xs-8">
+    <div class="container">
+        <div class="navbar-header">
+            <div class="row" id="navbar-row">
+                <div class="col-xs-3">
                     <div class="progress">
                         <div class="progress-value">
-                            <span id="time-progress">{{ timer }}</span> / <span
-                                id="ftime-progress">{{ ftime }}</span>
+                            <span id="time-progress-nav">{{ timer }}</span>
                         </div>
-                        <div class="progress-bar progress-bar-info" id="pb-time-progress" style="width:0"
-                             role="progressbar" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0"></div>
-                    </div>
-                </div>
-                <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default pull-right" id="btn-time-add">
-                        <span class="glyphicon glyphicon-plus"></span>
-                    </button>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default" id="btn-aro-reduce">
-                        <span class="glyphicon glyphicon-minus"></span>
-                    </button>
-                </div>
-                <div class="col-md-10 col-xs-8">
-                    <div class="progress">
-                        <div class="progress-value">
-                            <span id="arotext">{{ aro }}</span>
-                        </div>
-                        <div class="progress-bar progress-bar-info" id="aroprogress" style="width:0"
+                        <div class="progress-bar progress-bar-info" id="pb-time-progress-nav" style="width:0"
                              role="progressbar"></div>
                     </div>
                 </div>
-                <div class="col-md-1 col-xs-2">
-                    <button type="button" class="btn btn-default pull-right" id="btn-aro-add">
-                        <span class="glyphicon glyphicon-plus"></span>
+                <div class="col-xs-1">
+                    <button type="button" class="btn btn-default" id="btn-aro-reduce-nav">
+                        <span class="glyphicon glyphicon-minus"></span>
                     </button>
                 </div>
 
-            </div>
-            <div class="row">
-                <div class="col-md-3 col-xm-12">Громкость:</div>
-                <div class="col-md-6 col-xm-9">
-                    <input style="width:100%" id="volume-slider" data-slider-id='volSlider' type="text"
-                           data-slider-min="0" data-slider-max="100" data-slider-step="1"
-                           data-slider-value="{{ volume }}"/>
+                <div class="col-xs-1">
+                    <h5 id="arotext-nav">{{ aro }}</h5>
                 </div>
-                <div class="col-md-3 col-xm-3">
-                    <input id="soundstoggle" type="checkbox" data-size="mini" data-toggle="toggle" data-on="Звук вкл."
-                           data-off="Без звука" {% if volume !=0 %} checked{% endif %}>
+                <div class="col-xs-1">
+                    <button type="button" class="btn btn-default" id="btn-aro-add-nav">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>
+                <div class="col-xs-4">
+                    <input style="width:100%" id="volume-slider-bg-nav" data-slider-id='volSlider' type="text"
+                               data-slider-min="0" data-slider-max="100" data-slider-step="3" data-slider-tooltip_position="bottom"
+                               data-slider-value="{{ volume_bg }}"/>
+                </div>
+                <div class="col-xs-2">
+                    <button type="button" class="navbar-toggle pull-right" data-toggle="collapse" data-target="#myNavbar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    </button>
                 </div>
             </div>
-            <div class="row"><br/></div>
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="btn-group btn-group-justified controlbutons" role="group" aria-label="Control">
-                        <div class="btn-group" role="group">
-                            <button type="button" id="btn-reload" class="btn btn-default{% if quest.reloaded %} active{% endif %}" onclick="blur();"><span
-                                    class="glyphicon glyphicon-repeat"></span>Reload
-                            </button>
-                        </div>
-                        <div class="btn-group" role="group">
-                            <button type="button" id="btn-start"
-                                    class="btn btn-default{% if quest.in_process %} active{% endif %}" onclick="blur();"><span
-                                    class="glyphicon glyphicon-play"></span>Start
-                            </button>
-                        </div>
-                        <div class="btn-group" role="group">
-                            <button type="button" id="btn-stop" class="btn btn-default" onclick="blur();"><span
-                                    class="glyphicon glyphicon-stop"></span>Stop
-                            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="alert alert-danger hidden" id="con-issues" role="alert">
+                            Соединение с сервером потеряно!
                         </div>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-1 col-xs-2">
+                        <button type="button" class="btn btn-default" id="btn-time-reduce">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-10 col-xs-8 mainprog">
+                        <div class="progress">
+                            <div class="progress-value">
+                                <span id="time-progress">{{ timer }}</span> / <span
+                                    id="ftime-progress">{{ ftime }}</span>
+                            </div>
+                            <div class="progress-bar progress-bar-info" id="pb-time-progress" style="width:0"
+                                 role="progressbar" aria-valuemin="0" aria-valuemax="90" aria-valuenow="0"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-xs-2">
+                        <button type="button" class="btn btn-default pull-right" id="btn-time-add">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1 col-xs-2">
+                        <button type="button" class="btn btn-default" id="btn-aro-reduce">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    </div>
+                    <div class="col-md-10 col-xs-8 mainprog">
+                        <div class="progress">
+                            <div class="progress-value">
+                                <span id="arotext">{{ aro }}</span>
+                            </div>
+                            <div class="progress-bar progress-bar-info" id="aroprogress" style="width:0"
+                                 role="progressbar"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-xs-2">
+                        <button type="button" class="btn btn-default pull-right" id="btn-aro-add">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-xm-12">Громкость звуков:</div>
+                    <div class="col-md-6 col-xm-9">
+                        <input style="width:100%" id="volume-slider" data-slider-id='volSlider' type="text"
+                               data-slider-min="0" data-slider-max="100" data-slider-step="1"
+                               data-slider-value="{{ volume }}"/>
+                    </div>
+                    <div class="col-md-3 col-xm-3">
+                        <input id="soundstoggle" type="checkbox" data-size="mini" data-toggle="toggle"
+                               data-on="Звук вкл."
+                               data-off="Без звука" {% if volume !=0 %} checked{% endif %}>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-xm-12">Громкость музыки:</div>
+                    <div class="col-md-6 col-xm-9">
+                        <input style="width:100%" id="volume-slider-bg" data-slider-id='volSlider' type="text"
+                               data-slider-min="0" data-slider-max="100" data-slider-step="3"
+                               data-slider-value="{{ volume_bg }}"/>
+                    </div>
+                    <div class="col-md-3 col-xm-3">
+                        <input id="soundstoggle-bg" type="checkbox" data-size="mini" data-toggle="toggle"
+                               data-on="Звук вкл."
+                               data-off="Без звука" {% if volume_bg !=0 %} checked{% endif %}>
+                    </div>
+                </div>
+                <div class="row"><br/></div>
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="btn-group btn-group-justified controlbutons" role="group" aria-label="Control">
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-reload"
+                                        class="btn btn-default{% if quest.reloaded %} active{% endif %}"
+                                        onclick="blur();"><span
+                                        class="glyphicon glyphicon-repeat"></span>Reload
+                                </button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-start"
+                                        class="btn btn-default{% if quest.in_process %} active{% endif %}"
+                                        onclick="blur();"><span
+                                        class="glyphicon glyphicon-play"></span>Start
+                                </button>
+                            </div>
+                            <div class="btn-group" role="group">
+                                <button type="button" id="btn-stop" class="btn btn-default" onclick="blur();"><span
+                                        class="glyphicon glyphicon-stop"></span>Stop
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
-
     </div>
-  </div>
 </nav>
 
 
 <div class="container" id="maincont">
-
 
 
     <div class="panel panel-default">
@@ -163,7 +208,6 @@
                     {% endfor %}
                 </div>
             </div>
-            <br/>
 
         </div>
     </div>

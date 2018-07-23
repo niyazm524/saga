@@ -26,11 +26,10 @@ layout = gen_layout(device_cfg)
 device_cfg.altars.enable_notify(observer)
 
 
-
 @app.route('/')
 def index():
     return render_template("index.html", quest=quest, layout=layout, devices=device_cfg, timer=quest.get_time(),
-                           aro=quest.aro,
+                           aro=quest.aro, volume_bg=bg_player.volume,
                            ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
 
 
@@ -81,12 +80,13 @@ def btn_actlink():
 def poll():
     client_last_id = request.args.get('last_id', default=0, type=int)
     if client_last_id == 0:
-        return json.dumps({"last_id": observer.last_id})
+        return json.dumps({"last_id": observer.last_id, "time": quest.get_time()})
 
     while True:
         news = observer.poll_news(client_last_id)
         if news is not None:
-            return json.dumps({'last_id': observer.last_id, 'events': news})
+            return json.dumps({'last_id': observer.last_id, 'events': news, "time": quest.get_time(),
+                               'in_process': quest.in_process})
         else:
             time.sleep(1)
 

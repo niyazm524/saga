@@ -20,6 +20,7 @@ class EventType(Enum):
     MUSIC_PLAY_START = 14
     SOUND_PLAY_STOP = 15
     QUEST_RELOADED = 16
+    MUSIC_VOL_CHANGED = 17
 
 
 class Event:

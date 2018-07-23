@@ -28,6 +28,7 @@ class Quest:
     _fulltime_minutes = 90
     in_process = False
     progress = Progress.JUST_STARTED
+    prev_bg_vol = 70
     trunk_index = 0
     trunks_right = [1, 2, 3, 4, 5, 6]
     trunks_opened = []
@@ -40,8 +41,6 @@ class Quest:
         self.name = name
         self.player = player
         self.bg_player = bg_player
-        self.bg_volume_shift = 63     # self.bg_player.volume - int(self.bg_player.volume / 100 * 5)
-        print(self.bg_volume_shift)
         logging.config.dictConfig(log_config)
         self.logger = logging.getLogger("quest")
         self.logger.info("Quest {} initiated".format(self.name))
@@ -56,9 +55,12 @@ class Quest:
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
         elif event.event_type == EventType.SOUND_PLAY_START:
-            self.bg_player.volume_shift(-self.bg_volume_shift)
+            self.prev_bg_vol = self.bg_player.volume
+            self.bg_player.volume = 9
         elif event.event_type == EventType.SOUND_PLAY_STOP:
-            self.bg_player.volume_shift(+self.bg_volume_shift)
+            self.bg_player.volume = self.prev_bg_vol
+        elif event.event_type == EventType.MUSIC_VOL_CHANGED:
+            self.bg_player.volume = event.event_data
 
         if event.event_type == EventType.SENSOR_DATA_CHANGED and self.in_process:
             if event.event_device == devices.trunks:
@@ -72,7 +74,11 @@ class Quest:
                     print(self.trunks_current)
                     self.trunks_opened.append(pin)
 
-                    if len(self.trunks_current) == 0 or pin != self.trunks_current[0]:
+                    if len(self.trunks_current) == 0:
+                            self.aro -= 1
+                            self.player.load("sunduk1aro.mp3")
+                    else:
+                        if pin != self.trunks_current[0]:
                             self.aro -= 1
                             self.player.load("sunduk1aro.mp3")
 
@@ -200,7 +206,6 @@ class Quest:
 
     def legend(self):
         self.observer.push_event(Event(EventType.QUEST_RELOADED))
-        print("DFGHJK")
         self.reloaded = False
         self.bg_player.load_dir("sounds/music")
         self.start_time = time.time()

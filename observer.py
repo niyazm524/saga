@@ -48,7 +48,9 @@ class Observer:
         elif btn_id == "stop":
             self.push_event(Event(EventType.QUEST_STOP))
         elif btn_id == "volume":
-            self.push_event(Event(EventType.SOUND_VOL_CHANGED, event_data=btn_data))
+            self.push_event(Event(EventType.SOUND_VOL_CHANGED, event_data=int(btn_data)))
+        elif btn_id == "volume_bg":
+            self.push_event(Event(EventType.MUSIC_VOL_CHANGED, event_data=int(btn_data)))
         elif btn_id == "altars":
             a = int(btn_data)
             if 0 <= a <= 6:
