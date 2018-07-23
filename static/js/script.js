@@ -14,8 +14,23 @@ $("#soundstoggle").change(function soundtoggled() {
     vol_slider.bootstrapSlider('setValue', $(this).prop("checked") ? prev_volume : 0);
     sendAjax("/btn_click", "volume", $(this).prop("checked") ? prev_volume : 0);
 });
+$("#soundstoggle-bg").bootstrapToggle();
+$("#soundstoggle-bg").change(function soundtoggled() {
+    vol_slider_bg.bootstrapSlider('setValue', $(this).prop("checked") ? prev_volume_bg : 0);
+    sendAjax("/btn_click", "volume_bg", $(this).prop("checked") ? prev_volume_bg : 0);
+});
 
 var vol_slider = $('#volume-slider').bootstrapSlider({
+	formatter: function(value) {
+		return value.toString() + "%";
+	}
+});
+var vol_slider_bg = $('#volume-slider-bg').bootstrapSlider({
+	formatter: function(value) {
+		return value.toString() + "%";
+	}
+});
+var vol_slider_bg_nav = $('#volume-slider-bg-nav').bootstrapSlider({
 	formatter: function(value) {
 		return value.toString() + "%";
 	}
@@ -28,6 +43,7 @@ var pb_time = $("#pb-time-progress");
 var last_id = 0;
 var altars = $(".btn-altar");
 var prev_volume = vol_slider.bootstrapSlider('getValue');
+var prev_volume_bg = vol_slider_bg.bootstrapSlider('getValue');
 var ftime = parseInt(ftime_progress.text(), 10);
 var time = parseInt(time_progress.text(), 10);
 $("#aroprogress").css("width", (parseInt($("#arotext").text(), 10)/50*100).toString()+"%");
@@ -40,14 +56,30 @@ function onSlideStop(val)   {
     sendAjax("/btn_click", "volume", val.value.toString());
 }
 vol_slider.on("slideStop", onSlideStop);
+function onSlideStop_bg(val)   {
+    prev_volume_bg = val.value;
+    sendAjax("/btn_click", "volume_bg", val.value.toString());
+}
+vol_slider_bg.on("slideStop", onSlideStop_bg);
+vol_slider_bg_nav.on("slideStop", onSlideStop_bg);
 function updateTimeProgress()   {
     ftime_progress.text((ftime).toString().toHHMMSS());
     time_progress.text(time.toString().toHHMMSS());
     pb_time.css('width', (time/ftime*100).toString()+'%');
+    $("#time-progress-nav").text(time.toString().toHHMMSS());
+    $("#pb-time-progress-nav").css('width', (time/ftime*100).toString()+'%');
 }
 updateTimeProgress();
 
-setInterval(function(){if(in_process) {time += 1; updateTimeProgress();}}, 1000);
+function time_handle()  {
+    if(in_process) {
+        time += 1;
+        updateTimeProgress();
+    }
+}
+
+
+setInterval(time_handle, 1000);
 
 var con_issues = $("#con-issues");
 
@@ -59,7 +91,7 @@ function handleResponse(ajax)   {
 
 $(":button").click(function(event){
     this.blur();
-    sendAjax("/btn_click", this.id.replace(/^btn-/, ''), null);
+    sendAjax("/btn_click", this.id.replace(/(^btn-)|(-nav$)/g, ''), null);
 });
 
 altars.click(function(){
@@ -90,13 +122,13 @@ $(".actlink").click(function() {
     sendAjax("/btn-actlink", this.id, null);
 });
 
-$(".navbar-toggle").click(function() {
-    if(!$(this).hasClass("collapsed"))
-        $("body").css("padding-top", "70px");
-    else {
-        $("body").css("padding-top", "320px");
-    }
-});
+//$(".navbar-toggle").click(function() {
+//    if(!$(this).hasClass("collapsed"))
+//        $("body").css("padding-top", "70px");
+//    else {
+//        $("body").css("padding-top", "320px");
+//    }
+//});
 
 function sendAjax(url, id, data)    {
     $.get(
@@ -118,7 +150,7 @@ function poll() {
 
 $.ajax({
     url:"/poll?last_id="+last_id,
-    timeout: 60000,
+    timeout: 65000,
     success: function(data) {
         if(!con_issues.hasClass("hidden")){
             con_issues.addClass("hidden");
@@ -126,8 +158,16 @@ $.ajax({
 
 
         var jdata = JSON.parse(data);
-        console.log(jdata);
+        //console.log(jdata);
         last_id = jdata.last_id;
+        if('time' in jdata) {
+            time = jdata.time;
+            updateTimeProgress();
+        }
+        if('in_process' in jdata) {
+            in_process = jdata.in_process;
+            updateTimeProgress();
+        }
         if('events' in jdata)   {
             for(var i = 0; i < jdata.events.length; i++)    {
                 var event = jdata.events[i];
@@ -172,12 +212,20 @@ $.ajax({
                 else if(event.event_type == 13) {
                     $("#arotext").text(event.event_data);
                     $("#aroprogress").css("width", (event.event_data/50*100).toString()+"%");
+                    $("#arotext-nav").text(event.event_data);
                 }
                 else if(event.event_type == 16) {
-                    in_process = false;
                     if($("#btn-reload").hasClass("active")){
                         $("#btn-reload").removeClass("active");
                     }
+                }
+                else if(event.event_type == 17) {
+                    vol_slider_bg.bootstrapSlider('setValue', event.event_data);
+                    vol_slider_bg_nav.bootstrapSlider('setValue', event.event_data);
+                    if(event.event_data == 0)
+                        $("#soundstoggle-bg").prop('checked', false);
+                    else if(!$("#soundstoggle-bg").prop('checked'))
+                        $("#soundstoggle-bg").prop('checked', true);
                 }
             }
         }

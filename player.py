@@ -1,19 +1,17 @@
 from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import threading
 from events import Event, EventType
-import os, signal
+import os, signal, time
 
 
 class BGPlayer:
     paused = None
     observer = None
-    vol_down = False
+    vol_down = None
     proc = None
 
     def __init__(self, volume=60):
-
         self._volume = volume
-        self.volume = volume
         self.prev_volume = volume
 
     def load(self, sound_file):
@@ -40,24 +38,37 @@ class BGPlayer:
         if self.proc is not None:
             self.proc.kill()
 
+    @property
+    def volume(self):
+        return self._volume
+
+    @volume.setter
+    def volume(self, new_volume):
+        self.volume_shift((new_volume - self._volume) // 3)
+
     def volume_shift(self, vol):
+        if self.proc is None:
+            return
         if vol > 0:
             sym = b"*"
-            if self.vol_down is False:
-                return
-            self.vol_down = False
         elif vol < 0:
             sym = b"/"
-            if self.vol_down is True:
-                return
-            self.vol_down = True
         else:
             return
 
-        self.proc.stdin.write(sym * (abs(vol) // 3 + 1))
-        self.proc.stdin.flush()
+        self._volume = self._volume + vol*3
+        if vol > 0:
+            for _ in range(abs(vol)):
+                self.proc.stdin.write(sym)
+                self.proc.stdin.flush()
+                time.sleep(0.08)
+        else:
+            self.proc.stdin.write(sym * abs(vol))
+            self.proc.stdin.flush()
 
     def mute(self):
+        if self.proc is None:
+            return
         self.proc.stdin.write(b"m")
         self.proc.stdin.flush()
 
@@ -80,20 +91,21 @@ class Player:
         self.proc.stdin.flush()
 
     def load(self, sound_file):
-        self.rc("LOAD " + "sounds/"+sound_file)
-        self.current_sound_file = sound_file
         try:
             self.observer.push_event(Event(EventType.SOUND_PLAY_START, sound_file))
         except:
             pass
+        time.sleep(0.1)
+        self.rc("LOAD " + "sounds/"+sound_file)
+        self.current_sound_file = sound_file
+
         self.paused = False
 
     def std_read(self):
         while True:
             line = self.proc.stdout.readline()
             if line != '':
-                e = line[:2]
-                if e == b"@P":
+                if line[:2] == b"@P":
                     self.observer.push_event(Event(EventType.SOUND_PLAY_STOP))
             else:
                 break
