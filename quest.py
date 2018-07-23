@@ -161,7 +161,9 @@ class Quest:
             if event.event_device == devices.barrel and \
                     event.event_data['detected'] is True:
                 self.player.load("event.mp3")
+                time.sleep(5)
                 devices.door7.is_open = True
+                self.player.load("door.mp3")
 
             if event.event_device in [devices.runes, devices.statues, devices.horns] and \
                     event.event_data['detected'] is True:
