@@ -20,7 +20,7 @@ devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstan
 
 player = Player(volume=60)
 bg_player = BGPlayer(volume=70)
-quest = Quest("Скандинавская сага", player, bg_player)
+quest = Quest("Скандинавская сага", player, bg_player, device_cfg)
 observer = Observer(quest, logger, device_cfg, player, bg_player)
 layout = gen_layout(device_cfg)
 device_cfg.altars.enable_notify(observer)
@@ -81,14 +81,16 @@ def poll():
     client_last_id = request.args.get('last_id', default=0, type=int)
     if client_last_id == 0:
         return json.dumps({"last_id": observer.last_id, "time": quest.get_time()})
-
-    while True:
-        news = observer.poll_news(client_last_id)
-        if news is not None:
-            return json.dumps({'last_id': observer.last_id, 'events': news, "time": quest.get_time(),
-                               'in_process': quest.in_process})
-        else:
-            time.sleep(1)
+    try:
+        while True:
+            news = observer.poll_news(client_last_id)
+            if news is not None:
+                return json.dumps({'last_id': observer.last_id, 'events': news, "time": quest.get_time(),
+                                   'in_process': quest.in_process})
+            else:
+                time.sleep(1)
+    except KeyboardInterrupt:
+        return json.dumps({"last_id": 0})
 
 
 @app.route('/sensors.php', methods=['GET', 'POST'])

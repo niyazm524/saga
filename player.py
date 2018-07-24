@@ -2,6 +2,7 @@ from subprocess import Popen, PIPE, STDOUT, DEVNULL
 import threading
 from events import Event, EventType
 import os, signal, time
+import traceback
 
 
 class BGPlayer:
