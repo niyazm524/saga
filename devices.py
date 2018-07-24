@@ -40,7 +40,7 @@ class Device:
     @staticmethod
     def get_req(url):
         try:
-            urlopen(url)
+            urlopen(url, timeout=4)
         except BadStatusLine: pass
         except Exception as e:
             logger.error(e)

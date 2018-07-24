@@ -124,4 +124,4 @@ def _jinja2_filter_time(time_):
 if __name__ == "__main__":
     logger.info("Program started")
     observer.push_event(Event(EventType.PROGRAM_STARTED))
-    app.run(port=8000, host='0.0.0.0', debug=True, use_reloader=False, threaded=True)
+    app.run(port=8000, host='0.0.0.0', debug=False, use_reloader=False, threaded=True)
