@@ -11,7 +11,11 @@ board = Board("/dev/ttyS0")
 
 door1 = EspDoor(114, 7, 1)
 door2 = UartDoor(105, 1, 2)
+door2.can_deactivate = False
+door2.can_activate = False
 door3 = UartDoor(105, 2, 3)
+door3.can_deactivate = False
+door3.can_activate = False
 door4 = EspDoor(115, 7, 4)
 door5 = AlexDoor(108, index=5, btn_id="door5", cls_type="Дверь с титьками")
 

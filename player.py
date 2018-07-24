@@ -48,27 +48,25 @@ class BGPlayer:
 
     @volume.setter
     def volume(self, new_volume):
-        self.volume_shift((new_volume - self._volume) // 3)
+        print("old volume: {}".format(self._volume))
+        self.volume_shift(int((new_volume - self._volume) / 3))
 
     def volume_shift(self, vol):
         if self.proc is None:
-            return
-        if vol > 0:
-            sym = b"*"
-        elif vol < 0:
-            sym = b"/"
-        else:
             return
 
         self._volume = self._volume + vol*3
         if vol > 0:
             for _ in range(abs(vol)):
-                self.proc.stdin.write(sym)
+                self.proc.stdin.write(b"*")
                 self.proc.stdin.flush()
                 time.sleep(0.08)
-        else:
-            self.proc.stdin.write(sym * abs(vol))
+        elif vol < 0:
+            self.proc.stdin.write(b"/" * abs(vol))
             self.proc.stdin.flush()
+
+        print("new volume: {}".format(self._volume))
+        print("corrected by vol {}".format(vol))
 
     def mute(self):
         if self.proc is None:

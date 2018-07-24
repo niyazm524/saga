@@ -79,6 +79,7 @@ class Altars(Device):
     def actived(self, activate):
         if 0 <= activate <= 5:
             self.send(activate)
+            self._actived = activate
             if self.observer is not None:
                 self.observer.push_event(events.Event(events.EventType.ALTARS_WEB_REFRESH, event_data=activate))
 

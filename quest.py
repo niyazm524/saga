@@ -55,12 +55,12 @@ class Quest:
         elif event.event_type == EventType.SOUND_VOL_CHANGED:
             self.player.volume = event.event_data
         elif event.event_type == EventType.SOUND_PLAY_START:
-            self.prev_bg_vol = self.bg_player.volume
-            self.bg_player.volume = 9
+            self.bg_player.volume = 15
         elif event.event_type == EventType.SOUND_PLAY_STOP:
             self.bg_player.volume = self.prev_bg_vol
         elif event.event_type == EventType.MUSIC_VOL_CHANGED:
             self.bg_player.volume = event.event_data
+            self.prev_bg_vol = self.bg_player.volume
 
         if event.event_type == EventType.SENSOR_DATA_CHANGED and self.in_process:
             if event.event_device == self.devices.trunks:
@@ -183,7 +183,8 @@ class Quest:
         self._fulltime_minutes = 90
         self.devices.board.set_timer(0)
         self.bg_player.load("reload.mp3")
-        print("runes act")
+        self.devices.altars.turn_off_all()
+        Timer.cancel_timers()
 
         for em in self.devices.ems:
             if em.can_activate:
@@ -194,12 +195,10 @@ class Quest:
             dop.activate()
             time.sleep(0.2)
 
-        time.sleep(5)
+        time.sleep(2)
         for em in self.devices.ems:
-            time.sleep(0.5)
+            time.sleep(0.3)
             em.is_open = False
-        self.devices.altars.turn_off_all()
-        Timer.cancel_timers()
         self.trunk_index = 0
         self.trunks_opened = []
         self.trunks_current = self.trunks_right
@@ -231,6 +230,7 @@ class Quest:
 
         def start_altar1():
             self.player.load("secret1.mp3")
+            print("secret1")
             self.devices.altars.actived = 1
 
             def open_door1():

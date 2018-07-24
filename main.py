@@ -28,6 +28,7 @@ device_cfg.altars.enable_notify(observer)
 
 @app.route('/')
 def index():
+    print(device_cfg.altars.actived)
     return render_template("index.html", quest=quest, layout=layout, devices=device_cfg, timer=quest.get_time(),
                            aro=quest.aro, volume_bg=bg_player.volume,
                            ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
