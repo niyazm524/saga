@@ -54,13 +54,17 @@ html, body { overflow-x: hidden; }
     text-align: center;
 }
 
+#soundsvol  {
+    margin-bottom: 10px;
+}
+
 @media screen and (max-width: 480px) {
     .mainprog .progress-value {
         font-size: 18px;
     }
 
 }
-body { padding-top: 280px; }
+body { padding-top: 290px; }
 @media screen and (max-width: 768px) {
     body { padding-top: 70px; }
     .navbar-header {

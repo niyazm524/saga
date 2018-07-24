@@ -5,7 +5,6 @@ import os, signal, time
 
 
 class BGPlayer:
-    paused = None
     observer = None
     vol_down = None
     proc = None
@@ -15,28 +14,32 @@ class BGPlayer:
         self.prev_volume = volume
 
     def load(self, sound_file):
-        if self.proc is not None:
-            self.proc.terminate()
+        try:
+            self.proc.kill()
+        except:
+            pass
         self.proc = Popen(["mpg321", "--loop", "0", "-K", "--gain", str(self.volume), "sounds/"+sound_file], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
         try:
             self.observer.push_event(Event(EventType.MUSIC_PLAY_START, sound_file))
         except:
             pass
-        self.paused = False
 
     def load_dir(self, directory):
-        if self.proc is not None:
+        try:
             self.proc.kill()
+        except:
+            pass
         self.proc = Popen(["mpg321", "--loop", "0", "-B", "-K", "--gain", str(self.volume), directory], stdin=PIPE, stdout=DEVNULL, stderr=DEVNULL)
         try:
             self.observer.push_event(Event(EventType.MUSIC_PLAY_START_PLAY_START))
         except:
             pass
-        self.paused = False
 
     def stop(self):
-        if self.proc is not None:
+        try:
             self.proc.kill()
+        except:
+            pass
 
     @property
     def volume(self):
@@ -79,11 +82,11 @@ class Player:
     observer = None
 
     def __init__(self, volume=60):
-        self.proc = Popen(["mpg321", "-R", "word"], stdin=PIPE, stdout=PIPE, stderr=DEVNULL)
+        self.proc = Popen(["mpg321", "-R", "word", "--skip-printing-frames=30"], stdin=PIPE, stdout=PIPE, stderr=DEVNULL)
         self._volume = volume
         self.volume = volume
         self.prev_volume = volume
-        self.thread = threading.Thread(target=self.std_read, args=(), daemon=True)
+        self.thread = threading.Thread(target=self.std_read, args=(), daemon=False)
         self.thread.start()
 
     def rc(self, command: str):

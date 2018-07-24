@@ -46,6 +46,9 @@ class Device:
             logger.error(e)
             pass
 
+    def __format__(self, format_spec):
+        return "Device {} ({})".format(self.name, self.btn_id)
+
 
 class Altars(Device):
 
