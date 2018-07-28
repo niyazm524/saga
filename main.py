@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+from logging.handlers import TimedRotatingFileHandler
+
 from flask import Flask, render_template, request
 from quest import Quest
 from configs.log_config import log_config
@@ -12,10 +14,14 @@ from devices import Device, DeviceType
 import configs.device_config as device_cfg
 from configs.layout import gen_layout
 
-
 app = Flask(__name__)
 logging.config.dictConfig(log_config)
-logger = logging.getLogger("saga")
+logger = logging.getLogger("Main")
+handler = TimedRotatingFileHandler(log_config["handlers"]["fileHandler"]["filename"],
+                                   when="d",
+                                   interval=1,
+                                   backupCount=5)
+logger.addHandler(handler)
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 
 player = Player(volume=60)
@@ -28,10 +34,10 @@ device_cfg.altars.enable_notify(observer)
 
 @app.route('/')
 def index():
-    print(device_cfg.altars.actived)
     return render_template("index.html", quest=quest, layout=layout, devices=device_cfg, timer=quest.get_time(),
                            aro=quest.aro, volume_bg=bg_player.volume,
-                           ftime=quest.fulltime_minutes*60, volume=player.volume, now_playing=player.current_sound_file)
+                           ftime=quest.fulltime_minutes * 60, volume=player.volume,
+                           now_playing=player.current_sound_file)
 
 
 @app.route('/setup')
@@ -103,7 +109,7 @@ def sensors():
     for sensor in device_cfg.sensors:
         if remote_ip == sensor.IP:
             observer.push_event(Event(EventType.SENSOR_DATA_CHANGED, event_data={"detected": detected, "pin": pin},
-                                event_device=sensor))
+                                      event_device=sensor))
             break
 
     return "ok"
