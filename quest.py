@@ -68,16 +68,16 @@ class Quest:
                 if pin == 0:
                     return
                 self.logger.warning("OPENED TRUNK: " + str(pin))
-                print("OPENED TRUNK: " + str(pin))
 
                 if pin not in self.trunks_opened:
-                    print(self.trunks_current)
+                    self.logger.warning(self.trunks_current)
                     self.trunks_opened.append(pin)
 
                     if len(self.trunks_current) == 0:
                             self.aro -= 1
                             self.player.load("sunduk1aro.mp3")
                     else:
+                        self.logger.warning("pin: {}, right is {}".format(pin, self.trunks_current[0]))
                         if pin != self.trunks_current[0]:
                             self.aro -= 1
                             self.player.load("sunduk1aro.mp3")
@@ -88,7 +88,7 @@ class Quest:
                             self.progress = Progress.PASSED_TRUNKS  # Команда справилась с сундуками
 
                 else:
-                    print('already opened')
+                    self.logger.warning('already opened')
 
             if event.event_device == self.devices.altars:
                 data = event.event_data.split(":")
@@ -159,6 +159,8 @@ class Quest:
             if event.event_device == self.devices.door5 and \
                     event.event_data['detected'] is True:
                 self.player.load("event.mp3")
+                time.sleep(4)
+                self.player.load("door.mp3")
 
             if event.event_device == self.devices.tree and \
                     event.event_data['detected'] is True:
