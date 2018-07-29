@@ -8,7 +8,6 @@ function sendAjax(url, id, data)    {
     )
     .error(function() {
         console.log("Error")
-        alert("Ошибка")
     })
 }
 
