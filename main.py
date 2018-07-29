@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+from urllib.request import urlopen
 from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, render_template, request
@@ -13,6 +14,7 @@ from player import Player, BGPlayer
 from devices import Device, DeviceType
 import configs.device_config as device_cfg
 from configs.layout import gen_layout
+from os import system
 
 app = Flask(__name__)
 logging.config.dictConfig(log_config)
@@ -40,9 +42,34 @@ def index():
                            now_playing=player.current_sound_file)
 
 
-@app.route('/setup')
-def setup():
-    return render_template("setup.html", layout=layout, devices=devices, timer=0, ftime=0)
+# @app.route('/setup')
+# def setup():
+#     return render_template("setup.html", layout=layout, devices=devices, timer=0, ftime=0)
+
+
+def is_online(url, timeout=1000):
+    try:
+        print('Sending request to {}'.format(url))
+        response = urlopen(url, timeout=timeout)
+    except Exception:
+        # Generally using a catch-all is a bad practice but
+        # I think it's ok in this case
+        response = False
+        print('Request to {} failed'.format(url))
+    if response:
+        return True
+    else:
+        return False
+
+
+@app.route('/power')
+def power():
+    power1 = True
+    power2 = is_online("http://"+device_cfg.trunks.IP)
+    power3 = is_online("http://"+device_cfg.horns.IP)
+    powers = True
+    print([powers, power1, power2, power3])
+    return render_template("power.html", power=[powers, power1, power2, power3])
 
 
 @app.route('/btn_click', methods=['GET', 'POST'])

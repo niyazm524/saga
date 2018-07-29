@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Питание{% endblock %}
+{% block content %}
+<div class="container" id="maincont">
+    <h1>Питание устройств</h1>
+    <div class="device">
+        <h3>
+        <input type="checkbox" id="all" data-toggle="toggle" data-size="large"{% if power[0] == true %} checked{% endif %}>
+            Все устройства</h3>
+    </div>
+
+    <div class="device">
+        <h3>
+        <input type="checkbox" id="main" data-toggle="toggle" data-size="large"{% if power[1] == true %} checked{% endif %}>
+            Главная малина</h3>
+    </div>
+
+    <div class="device">
+        <h3>
+        <input type="checkbox" id="trunks" data-toggle="toggle" data-size="large"{% if power[2] == true %} checked{% endif %}>
+            Сундучная</h3>
+    </div>
+
+    <div class="device">
+        <h3>
+        <input type="checkbox" id="horns" data-toggle="toggle" data-size="large"{% if power[3] == true %} checked{% endif %}>
+            Рога</h3>
+    </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/power.js') }}"></script>
+{% endblock %}

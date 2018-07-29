@@ -1,3 +1,5 @@
+from os import system
+
 from events import Event, EventType
 from pprint import pformat
 from collections import deque
@@ -59,6 +61,13 @@ class Observer:
             self.quest.aro -= 1
         elif btn_id == "aro-add":
             self.quest.aro += 1
+
+        elif btn_id == "power-main":
+            system("sudo halt")
+        elif btn_id == "power-trunks":
+            Device.get_req("http://10.0.100.105/relay.php?poweroff=true")
+        elif btn_id == "power-horns":
+            Device.get_req("http://10.0.100.106/relay.php?poweroff=true")
 
     def door_clicked(self, door, action):
         try:

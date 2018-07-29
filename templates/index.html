@@ -1,6 +1,32 @@
 {% extends "base.html" %}
-
+{% block styles %}
+<link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+{% endblock %}
 {% block content %}
+{% include 'navbar.html' %}
+<div class="container" id="maincont">
+
+
+    <div class="panel panel-default">
+        <div class="panel-heading">Алтари</div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    {% for n in range(1,6) %}
+                    <label type="button"
+                           class="btn btn-primary btn-altar{% if devices.altars.actived == n %} active{% endif %}"
+                           autocomplete="off">
+                        Алтарь {{n}}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <hr/>
+
 {% for room in layout %}
 <div class="panel panel-default autoadded">
     <div class="panel-heading">{{ room.name }}</div>
@@ -38,5 +64,8 @@
     </div>
 </div>
 {% endfor %}
-
+</div>
 {% endblock content %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}
