@@ -67,7 +67,7 @@ class Observer:
         elif btn_id == "power-trunks":
             Device.get_req("http://10.0.100.105/relay.php?poweroff=true")
         elif btn_id == "power-horns":
-            Device.get_req("http://10.0.100.106/relay.php?poweroff=true")
+            Device.get_req("http://10.0.100.106/?poweroff=true")
 
     def door_clicked(self, door, action):
         try:
