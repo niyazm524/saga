@@ -28,10 +28,7 @@ class Quest:
     in_process = False
     progress = Progress.JUST_STARTED
     prev_bg_vol = 70
-    trunk_index = 0
     trunks_right = [1, 2, 3, 4, 5, 6]
-    trunks_opened = []
-    trunks_current = trunks_right
     _aro = 0
 
     def __init__(self, name, player: Player, bg_player: BGPlayer, devices):
@@ -41,6 +38,9 @@ class Quest:
         self.player = player
         self.bg_player = bg_player
         self.devices = devices
+        self.trunk_index = 0
+        self.trunks_opened = []
+        self.trunks_current = Quest.trunks_right
         logging.config.dictConfig(log_config)
         self.logger = logging.getLogger("quest")
         self.logger.info("Quest {} initiated".format(self.name))
@@ -179,6 +179,8 @@ class Quest:
                 self.aro += 5
 
     def reload(self):
+        if self.in_process:
+            self.stop()
         self.in_process = False
         self.reloaded = True
         self.aro = 0
@@ -187,6 +189,9 @@ class Quest:
         self.bg_player.load("reload.mp3")
         self.devices.altars.turn_off_all()
         Timer.cancel_timers()
+        self.trunk_index = 0
+        self.trunks_opened = []
+        self.trunks_current = Quest.trunks_right
 
         for em in self.devices.ems:
             if em.can_activate:
@@ -201,9 +206,6 @@ class Quest:
         for em in self.devices.ems:
             time.sleep(0.3)
             em.is_open = False
-        self.trunk_index = 0
-        self.trunks_opened = []
-        self.trunks_current = self.trunks_right
 
     def legend(self):
         self.observer.push_event(Event(EventType.QUEST_RELOADED))
