@@ -42,10 +42,15 @@ class Event:
         return self.event_type == other.event_type and self.event_data == other.event_data
 
     def __format__(self, format_spec):
-        return "Event {} with data {} from {}".format(self.event_type.name, self.event_data, self.event_device)
+        return repr(self)
 
     def __repr__(self):
-        return "<Event> {} with data {}".format(self.event_type.name, self.event_data)
+        r = "<Event> {} ".format(self.event_type.name)
+        if self.event_data is not None:
+            r += "with data {} ".format(self.event_data)
+        if self.event_device is not None:
+            r += "from {} ".format(self.event_device.name)
+        return r
 
     def __str__(self):
-        return "Event {} with data {} from {}".format(self.event_type.name, self.event_data, self.event_device)
+        return repr(self)
