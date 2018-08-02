@@ -5,6 +5,8 @@ from pprint import pformat
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor
 from devices import Device
+import logging.config
+from configs.log_config import log_config
 import time
 
 
@@ -14,10 +16,11 @@ class Observer:
     last_10 = deque(maxlen=10)
     ignored_list = [EventType.ALTARS_WEB_REFRESH, EventType.MUSIC_PLAY_START, EventType.QUEST_RELOADED]
 
-    def __init__(self, quest, logger, device_cfg, player, bg_player):
+    def __init__(self, quest, device_cfg, player, bg_player):
         self.quest = quest
         self.quest.observer = self
-        self.logger = logger
+        logging.config.dictConfig(log_config)
+        self.logger = logging.getLogger("observer")
         self.player = player
         self.player.observer = self
         self.bg_player = bg_player
@@ -32,7 +35,7 @@ class Observer:
         self.last_id += 1
         event.event_id = self.last_id
         self.last_10.appendleft(event)
-        self.logger.debug("New event! "+pformat(event))
+        self.logger.info("New event! "+pformat(event))
         if event.event_type not in self.ignored_list:
             self.pool.submit(self.quest.update, event)
 
@@ -65,9 +68,9 @@ class Observer:
         elif btn_id == "power-main":
             system("sudo halt")
         elif btn_id == "power-trunks":
-            Device.get_req("http://10.0.100.105/relay.php?poweroff=true")
+            Device.get_req_static("http://10.0.100.105/relay.php?poweroff=true", "Trunks power off")
         elif btn_id == "power-horns":
-            Device.get_req("http://10.0.100.106/?poweroff=true")
+            Device.get_req_static("http://10.0.100.106/?poweroff=true", "Horns power off")
 
     def door_clicked(self, door, action):
         try:
@@ -98,12 +101,12 @@ class Observer:
             for dop_dev in self.device_cfg.dops:
                 dop_dev.is_open = True
         elif id == "masks_open":
-            for i in range(10):
-                Device.get_req("http://10.0.110.104/?u=20100")
+            for i in range(6):
+                Device.get_req_static("http://10.0.110.104/?u=20100", "Masks locker open")
                 time.sleep(0.2)
         elif id == "masks_close":
-            for i in range(10):
-                Device.get_req("http://10.0.110.104/?u=20101")
+            for i in range(6):
+                Device.get_req_static("http://10.0.110.104/?u=20101", "Masks locker close")
                 time.sleep(0.2)
 
     def poll_news(self, last_new):

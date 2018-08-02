@@ -37,13 +37,21 @@ class Device:
         self.IP = "10.0.110."+str(ip)
         self.btn_id = btn_id
 
-    @staticmethod
-    def get_req(url):
+    def get_req(self, url: str):
         try:
-            urlopen(url, timeout=4)
+            os.system('curl -s -o /dev/null --max-time 7 "{}" &'.format(url))
         except BadStatusLine: pass
         except Exception as e:
-            logger.error(e)
+            logger.error("{} ({}) for device {} with IP {}".format(type(e).__name__, e, self.name, self.IP))
+            pass
+
+    @staticmethod
+    def get_req_static(url: str, name: str):
+        try:
+            os.system('curl -s -o /dev/null --max-time 7 "{}" &'.format(url))
+        except BadStatusLine: pass
+        except Exception as e:
+            logger.error("{} ({}) for device {}".format(type(e).__name__, e, name))
             pass
 
     def __format__(self, format_spec):
@@ -63,13 +71,7 @@ class Altars(Device):
         self.observer = observer
 
     def send(self, command):
-        try:
-            urlopen("http://{}/set?n={}".format(self.IP, command))
-            print("http://{}/set?n={}".format(self.IP, command))
-        except (HTTPError, URLError):
-            return False
-        else:
-            return True
+        self.get_req("http://{}/set?n={}".format(self.IP, command))
 
     @property
     def actived(self):
@@ -148,22 +150,23 @@ class Door(Device):
         return self._is_open
 
     def activate(self):
-        Device.get_req(self.url_to_activate)
+        self.get_req(self.url_to_activate)
 
     def deactivate(self):
         if self.url_to_deactivate == "":
             return
-        Device.get_req(self.url_to_deactivate)
+        self.get_req(self.url_to_deactivate)
 
     def start(self):
         if self.url_to_start == "":
             return
-        Device.get_req(self.url_to_start)
+        self.get_req(self.url_to_start)
 
     @is_open.setter
     def is_open(self, is_open: bool):
-        Device.get_req(self.url_to_open if is_open else self.url_to_close)
+        self.get_req(self.url_to_open if is_open else self.url_to_close)
         self._is_open = is_open
+        logger.debug("Door {} is now {}".format(self.name, "open" if is_open else "closed"))
 
 
 class EspDoor(Door):

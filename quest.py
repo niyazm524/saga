@@ -67,7 +67,7 @@ class Quest:
                 pin = event.event_data['pin']
                 if pin == 0:
                     return
-                self.logger.warning("OPENED TRUNK: " + str(pin))
+                self.logger.info("OPENED TRUNK: " + str(pin))
 
                 if pin not in self.trunks_opened:
                     self.logger.warning(self.trunks_current)
@@ -77,22 +77,24 @@ class Quest:
                             self.aro -= 1
                             self.player.load("sunduk1aro.mp3")
                     else:
-                        self.logger.warning("pin: {}, right is {}".format(pin, self.trunks_current[0]))
+                        self.logger.warning("Trunks: pin: {}, right is {}".format(pin, self.trunks_current[0]))
                         if pin != self.trunks_current[0]:
                             self.aro -= 1
                             self.player.load("sunduk1aro.mp3")
+                            self.logger.warning("Wrong Trunk, losing aros")
 
                     if pin in self.trunks_current:
                         self.trunks_current.remove(pin)
                         if len(self.trunks_current) == 0:
+                            self.logger.info("Trunks passed successfully")
                             self.progress = Progress.PASSED_TRUNKS  # Команда справилась с сундуками
 
                 else:
-                    self.logger.warning('already opened')
+                    self.logger.warning('Trunk already opened')
 
             if event.event_device == self.devices.altars:
                 data = event.event_data.split(":")
-                print(data)
+                self.logger.debug("Altar sent data {}".format(data))
                 if data[1] == '0':
                     self.aro -= 1
                     self.player.load("minusAro.mp3")
@@ -158,6 +160,7 @@ class Quest:
 
             if event.event_device == self.devices.door5 and \
                     event.event_data['detected'] is True:
+                self.logger.info("Door with tits passed successfully")
                 self.player.load("event.mp3")
                 time.sleep(4)
                 self.player.load("door.mp3")
@@ -165,6 +168,7 @@ class Quest:
             if event.event_device == self.devices.tree and \
                     event.event_data['detected'] is True:
                 self.player.load("event.mp3")
+                self.logger.info("Tree passed successfully")
 
             if event.event_device == self.devices.barrel and \
                     event.event_data['detected'] is True:
@@ -172,13 +176,16 @@ class Quest:
                 time.sleep(5)
                 self.devices.door7.is_open = True
                 self.player.load("door.mp3")
+                self.logger.info("Barrel passed successfully")
 
             if event.event_device in [self.devices.runes, self.devices.statues, self.devices.horns] and \
                     event.event_data['detected'] is True:
+                self.logger.info("Wow, dop {} passed successfully".format(event.event_device.name))
                 self.player.load("plus5Aro.mp3")
                 self.aro += 5
 
     def reload(self):
+        self.logger.info("Reloading...")
         if self.in_process:
             self.stop()
         self.in_process = False
@@ -206,8 +213,10 @@ class Quest:
         for em in self.devices.ems:
             time.sleep(0.3)
             em.is_open = False
+        self.logger.info("Quest reloaded.")
 
     def legend(self):
+        self.logger.info("Starting...")
         self.observer.push_event(Event(EventType.QUEST_RELOADED))
         self.reloaded = False
         self.bg_player.load_dir("sounds/music")
@@ -244,8 +253,10 @@ class Quest:
             Timer(19, open_door1).start()
 
         Timer(86, start_altar1).start()
+        self.logger.info("Quest started.")
 
     def stop(self):
+        self.logger.info("Stopping...")
         self.observer.push_event(Event(EventType.QUEST_RELOADED))
         self.devices.altars.turn_off_all()
         self.player.stop()
@@ -256,6 +267,7 @@ class Quest:
             em.is_open = True
             time.sleep(0.5)
         Timer.cancel_timers()
+        self.logger.info("Quest stopped.")
 
     def get_time(self):
         if self.in_process:

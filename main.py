@@ -19,17 +19,17 @@ from os import system
 app = Flask(__name__)
 logging.config.dictConfig(log_config)
 logger = logging.getLogger("Main")
-handler = TimedRotatingFileHandler(log_config["handlers"]["fileHandler"]["filename"],
-                                   when="d",
-                                   interval=1,
-                                   backupCount=5)
-logger.addHandler(handler)
+# handler = TimedRotatingFileHandler(log_config["handlers"]["fileHandler"]["filename"],
+#                                    when="d",
+#                                    interval=1,
+#                                    backupCount=5)
+# logger.addHandler(handler)
 devices = [getattr(device_cfg, device) for device in dir(device_cfg) if isinstance(getattr(device_cfg, device), Device)]
 
 player = Player(volume=60)
 bg_player = BGPlayer(volume=70)
 quest = Quest("Скандинавская сага", player, bg_player, device_cfg)
-observer = Observer(quest, logger, device_cfg, player, bg_player)
+observer = Observer(quest, device_cfg, player, bg_player)
 layout = gen_layout(device_cfg)
 device_cfg.altars.enable_notify(observer)
 
@@ -156,6 +156,6 @@ def _jinja2_filter_time(time_):
 
 
 if __name__ == "__main__":
-    logger.info("Program started")
+    logger.warning("Program started")
     observer.push_event(Event(EventType.PROGRAM_STARTED))
     app.run(port=8000, host='0.0.0.0', debug=False, use_reloader=False, threaded=True)
