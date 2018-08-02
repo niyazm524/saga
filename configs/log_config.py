@@ -13,6 +13,7 @@ log_config = {
             'class': 'logging.StreamHandler',
         },
         "fileHandler": {
+            "level": "DEBUG",
             "class": "logging.FileHandler",
             "formatter": "short",
             "filename": "saga.log"
@@ -29,7 +30,7 @@ log_config = {
         },
         'observer': {
             'handlers': ['console', 'fileHandler'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': False
         },
         'devices': {
