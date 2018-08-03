@@ -28,7 +28,6 @@ class Quest:
     in_process = False
     progress = Progress.JUST_STARTED
     prev_bg_vol = 70
-    trunks_right = [1, 2, 3, 4, 5, 6]
     _aro = 0
 
     def __init__(self, name, player: Player, bg_player: BGPlayer, devices):
@@ -38,9 +37,8 @@ class Quest:
         self.player = player
         self.bg_player = bg_player
         self.devices = devices
-        self.trunk_index = 0
         self.trunks_opened = []
-        self.trunks_current = Quest.trunks_right
+        self.trunks_current = list(range(1, 7))
         logging.config.dictConfig(log_config)
         self.logger = logging.getLogger("quest")
         self.logger.info("Quest {} initiated".format(self.name))
@@ -196,9 +194,8 @@ class Quest:
         self.bg_player.load("reload.mp3")
         self.devices.altars.turn_off_all()
         Timer.cancel_timers()
-        self.trunk_index = 0
         self.trunks_opened = []
-        self.trunks_current = Quest.trunks_right
+        self.trunks_current = list(range(1, 7))
 
         for em in self.devices.ems:
             if em.can_activate:
@@ -258,6 +255,7 @@ class Quest:
     def stop(self):
         self.logger.info("Stopping...")
         self.observer.push_event(Event(EventType.QUEST_RELOADED))
+        self.trunks_current = list(range(1, 7))
         self.devices.altars.turn_off_all()
         self.player.stop()
         self.bg_player.stop()
