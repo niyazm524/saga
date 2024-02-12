@@ -4,7 +4,6 @@ from events import Event, EventType
 import os, signal, time
 import traceback
 
-
 class BGPlayer:
     observer = None
     vol_down = None

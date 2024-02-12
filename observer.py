@@ -68,9 +68,9 @@ class Observer:
         elif btn_id == "power-main":
             system("sudo halt")
         elif btn_id == "power-trunks":
-            Device.get_req_static("http://10.0.100.105/relay.php?poweroff=true", "Trunks power off")
+            Device.get_req_static("http://10.0.110.105/relay.php?poweroff=true", "Trunks power off")
         elif btn_id == "power-horns":
-            Device.get_req_static("http://10.0.100.106/?poweroff=true", "Horns power off")
+            Device.get_req_static("http://10.0.110.106/?poweroff=true", "Horns power off")
 
     def door_clicked(self, door, action):
         try:

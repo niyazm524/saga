@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 from urllib.request import urlopen
-from logging.handlers import TimedRotatingFileHandler
 
 from flask import Flask, render_template, request
 from quest import Quest
@@ -11,10 +10,9 @@ from events import Event, EventType
 import time
 import json
 from player import Player, BGPlayer
-from devices import Device, DeviceType
+from devices import Device
 import configs.device_config as device_cfg
 from configs.layout import gen_layout
-from os import system
 
 app = Flask(__name__)
 logging.config.dictConfig(log_config)
